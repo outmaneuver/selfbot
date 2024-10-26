@@ -75,6 +75,9 @@ class SelfBot(commands.Bot):
             "avatar": str(member.avatar_url),
             "display_name": member.display_name
         }
+        self.handle_store_user_info(user_info)
+
+    def handle_store_user_info(self, user_info):
         try:
             if self.local_db_conn:
                 self.store_user_info_local(user_info)
@@ -130,6 +133,18 @@ class SelfBot(commands.Bot):
 
     def store_user_info_redis(self, user_info):
         self.redis_client.hmset(f"user:{user_info['id']}", user_info)
+
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, commands.CommandNotFound):
+            await ctx.send("Sorry, I didn't understand that command.")
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("It looks like you're missing a required argument.")
+        elif isinstance(error, commands.BadArgument):
+            await ctx.send("There was an issue with one of the arguments you provided.")
+        elif isinstance(error, commands.CommandInvokeError):
+            await ctx.send("There was an error while executing the command.")
+        else:
+            await ctx.send("An unexpected error occurred. Please try again later.")
 
 if __name__ == "__main__":
     bot = SelfBot()

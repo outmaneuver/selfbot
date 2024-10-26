@@ -25,35 +25,29 @@ class NameHistoryCog(commands.Cog):
 
     @commands.command(name='namehistory')
     async def name_history(self, ctx, user: discord.User):
-        try:
-            name_history = self.fetch_name_history(user.id)
-            if name_history:
-                await ctx.send(f"Name history for {user.name}: {', '.join(name_history)}")
-            else:
-                await ctx.send(f"No name history found for {user.name}")
-        except Exception as e:
-            await ctx.send(f"An error occurred while fetching name history: {str(e)}")
+        name_history = self.fetch_name_history(user.id)
+        if name_history:
+            await ctx.send(f"Name history for {user.name}: {', '.join(name_history)}")
+        else:
+            await ctx.send(f"No name history found for {user.name}")
 
     def fetch_name_history(self, user_id):
         name_history = []
-        try:
-            if self.local_db_conn:
-                cursor = self.local_db_conn.cursor()
-                cursor.execute("SELECT name FROM name_history WHERE user_id = ?", (user_id,))
-                name_history.extend([row[0] for row in cursor.fetchall()])
-            if self.mongo_client:
-                db = self.mongo_client[os.getenv("MONGODB_DATABASE")]
-                collection = db["name_history"]
-                name_history.extend([doc["name"] for doc in collection.find({"user_id": user_id})])
-            if self.mysql_conn:
-                cursor = self.mysql_conn.cursor()
-                cursor.execute("SELECT name FROM name_history WHERE user_id = %s", (user_id,))
-                name_history.extend([row[0] for row in cursor.fetchall()])
-            if self.redis_client:
-                names = self.redis_client.lrange(f"name_history:{user_id}", 0, -1)
-                name_history.extend([name.decode("utf-8") for name in names])
-        except Exception as e:
-            print(f"An error occurred while fetching name history: {str(e)}")
+        if self.local_db_conn:
+            cursor = self.local_db_conn.cursor()
+            cursor.execute("SELECT name FROM name_history WHERE user_id = ?", (user_id,))
+            name_history.extend([row[0] for row in cursor.fetchall()])
+        if self.mongo_client:
+            db = self.mongo_client[os.getenv("MONGODB_DATABASE")]
+            collection = db["name_history"]
+            name_history.extend([doc["name"] for doc in collection.find({"user_id": user_id})])
+        if self.mysql_conn:
+            cursor = self.mysql_conn.cursor()
+            cursor.execute("SELECT name FROM name_history WHERE user_id = %s", (user_id,))
+            name_history.extend([row[0] for row in cursor.fetchall()])
+        if self.redis_client:
+            names = self.redis_client.lrange(f"name_history:{user_id}", 0, -1)
+            name_history.extend([name.decode("utf-8") for name in names])
         return name_history
 
 def setup(bot):
