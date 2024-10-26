@@ -113,3 +113,7 @@ Here are some examples of how to use the commands:
 ## Library
 
 This selfbot utilizes the `discord.py-self` library for its functionality.
+
+## Contributing
+
+We welcome contributions to the selfbot project! If you would like to contribute, please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file for detailed instructions on how to get started.
