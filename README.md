@@ -27,6 +27,8 @@ This selfbot utilizes a local database and has the option to utilize external da
 - `!massban <user1> <user2> ... [reason]`: Ban multiple users from the server
 - `!kickrole <role> [reason]`: Kick all users with a specific role from the server
 - `!banrole <role> [reason]`: Ban all users with a specific role from the server
+- `!setactivity <activity_type> <activity_name>`: Set a custom activity status
+- `!clearactivity`: Clear the custom activity status
 
 The output will be formatted in codeblocks.
 
@@ -108,6 +110,16 @@ Here are some examples of how to use the commands:
 - Ban all users with a specific role from the server:
   ```
   !banrole @role [reason]
+  ```
+
+- Set a custom activity status:
+  ```
+  !setactivity playing Minecraft
+  ```
+
+- Clear the custom activity status:
+  ```
+  !clearactivity
   ```
 
 ## Library
