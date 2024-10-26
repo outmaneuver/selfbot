@@ -12,6 +12,7 @@ This selfbot utilizes a local database and has the option to utilize external da
 - Subscribes to guilds
 - Stores username, avatar, and display name changes
 - Global error handler for better error management
+- Modularized database connection logic for better code organization
 
 ## Commands
 
