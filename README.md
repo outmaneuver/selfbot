@@ -21,9 +21,9 @@ This selfbot utilizes a local database and has the option to utilize external da
 
 ## Commands
 
-- `!namehistory <user>`: Request a user's name history
-- `!avhistory <user>`: Request a user's avatar history
-- `!currentav <user>`: Request a user's current avatar
+- `!namehistory [user]`: Request a user's name history. Defaults to the selfbot user if no user is mentioned.
+- `!avhistory [user]`: Request a user's avatar history. Defaults to the selfbot user if no user is mentioned.
+- `!currentav [user]`: Request a user's current avatar. Defaults to the selfbot user if no user is mentioned.
 - `!kick <user> [reason]`: Kick a user from the server
 - `!ban <user> [reason]`: Ban a user from the server
 - `!masskick <user1> <user2> ... [reason]`: Kick multiple users from the server

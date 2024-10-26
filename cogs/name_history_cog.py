@@ -22,7 +22,9 @@ class NameHistoryCog(commands.Cog):
         self.local_cache = bot.local_cache
 
     @commands.command(name='namehistory')
-    async def name_history(self, ctx, user: discord.User):
+    async def name_history(self, ctx, user: discord.User = None):
+        if user is None:
+            user = ctx.author
         name_history = self.fetch_name_history(user.id)
         if name_history:
             await ctx.send(f"Here's the name history for {user.name}: {', '.join(name_history)}")
