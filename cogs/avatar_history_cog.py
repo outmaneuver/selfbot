@@ -22,7 +22,9 @@ class AvatarHistoryCog(commands.Cog):
         self.local_cache = bot.local_cache
 
     @commands.command(name='avhistory')
-    async def avatar_history(self, ctx, user: discord.User):
+    async def avatar_history(self, ctx, user: discord.User = None):
+        if user is None:
+            user = ctx.author
         avatar_history = self.fetch_avatar_history(user.id)
         if avatar_history:
             await ctx.send(f"Here's the avatar history for {user.name}: {', '.join(avatar_history)}")

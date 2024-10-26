@@ -6,7 +6,9 @@ class CurrentAvatarCog(commands.Cog):
         self.bot = bot
 
     @commands.command(name='currentav')
-    async def current_avatar(self, ctx, user: discord.User):
+    async def current_avatar(self, ctx, user: discord.User = None):
+        if user is None:
+            user = ctx.author
         await ctx.send(f"Hey there! Here's the current avatar for {user.name}: {user.avatar_url}")
 
 def setup(bot):
