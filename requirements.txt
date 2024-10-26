@@ -2,3 +2,4 @@ discord.py-self
 pymongo
 mysql-connector-python
 redis
+python-dotenv

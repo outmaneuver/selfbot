@@ -4,46 +4,47 @@ import sqlite3
 import pymongo
 import mysql.connector
 import redis
-import json
+import os
+from dotenv import load_dotenv
+import importlib
+
+load_dotenv()
 
 class SelfBot(commands.Bot):
-    def __init__(self, config_file):
-        super().__init__(command_prefix="!")
-        self.config = self.load_config(config_file)
+    def __init__(self):
+        super().__init__(command_prefix=os.getenv("PREFIX"))
         self.local_db_conn = None
         self.mongo_client = None
         self.mysql_conn = None
         self.redis_client = None
         self.setup_databases()
-        self.add_cogs()
-
-    def load_config(self, config_file):
-        with open(config_file, 'r') as f:
-            return json.load(f)
+        self.load_cogs()
 
     def setup_databases(self):
-        if self.config.get("local_db"):
-            self.local_db_conn = sqlite3.connect(self.config["local_db"]["path"])
-        if self.config.get("mongodb"):
-            self.mongo_client = pymongo.MongoClient(self.config["mongodb"]["uri"])
-        if self.config.get("mysql"):
+        if os.getenv("LOCAL_DB_PATH"):
+            self.local_db_conn = sqlite3.connect(os.getenv("LOCAL_DB_PATH"))
+        if os.getenv("MONGODB_URI"):
+            self.mongo_client = pymongo.MongoClient(os.getenv("MONGODB_URI"))
+        if os.getenv("MYSQL_HOST"):
             self.mysql_conn = mysql.connector.connect(
-                host=self.config["mysql"]["host"],
-                user=self.config["mysql"]["user"],
-                password=self.config["mysql"]["password"],
-                database=self.config["mysql"]["database"]
+                host=os.getenv("MYSQL_HOST"),
+                user=os.getenv("MYSQL_USER"),
+                password=os.getenv("MYSQL_PASSWORD"),
+                database=os.getenv("MYSQL_DATABASE")
             )
-        if self.config.get("redis"):
+        if os.getenv("REDIS_HOST"):
             self.redis_client = redis.StrictRedis(
-                host=self.config["redis"]["host"],
-                port=self.config["redis"]["port"],
-                password=self.config["redis"]["password"]
+                host=os.getenv("REDIS_HOST"),
+                port=os.getenv("REDIS_PORT"),
+                password=os.getenv("REDIS_PASSWORD")
             )
 
-    def add_cogs(self):
-        self.add_cog(NameHistoryCog(self))
-        self.add_cog(AvatarHistoryCog(self))
-        self.add_cog(CurrentAvatarCog(self))
+    def load_cogs(self):
+        for filename in os.listdir('./cogs'):
+            if filename.endswith('.py'):
+                cog_name = filename[:-3]
+                cog_module = importlib.import_module(f'cogs.{cog_name}')
+                self.add_cog(cog_module.setup(self))
 
     async def on_ready(self):
         print(f'Logged in as {self.user}')
@@ -81,7 +82,7 @@ class SelfBot(commands.Bot):
         self.local_db_conn.commit()
 
     def store_user_info_mongo(self, user_info):
-        db = self.mongo_client[self.config["mongodb"]["database"]]
+        db = self.mongo_client[os.getenv("MONGODB_DATABASE")]
         collection = db["users"]
         collection.update_one({"id": user_info["id"]}, {"$set": user_info}, upsert=True)
 
@@ -100,47 +101,6 @@ class SelfBot(commands.Bot):
     def store_user_info_redis(self, user_info):
         self.redis_client.hmset(f"user:{user_info['id']}", user_info)
 
-class NameHistoryCog(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
-    @commands.command()
-    async def namehistory(self, ctx, user: discord.User):
-        name_history = self.fetch_name_history(user.id)
-        formatted_history = "\n".join(name_history)
-        await ctx.send(f"```Name History for {user.name}:\n{formatted_history}```")
-
-    def fetch_name_history(self, user_id):
-        # Fetch name history from the database
-        return ["ExampleName1", "ExampleName2"]  # Placeholder
-
-class AvatarHistoryCog(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
-    @commands.command()
-    async def avhistory(self, ctx, user: discord.User):
-        avatar_history = self.fetch_avatar_history(user.id)
-        formatted_history = "\n".join(avatar_history)
-        await ctx.send(f"```Avatar History for {user.name}:\n{formatted_history}```")
-
-    def fetch_avatar_history(self, user_id):
-        # Fetch avatar history from the database
-        return ["ExampleAvatar1", "ExampleAvatar2"]  # Placeholder
-
-class CurrentAvatarCog(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
-    @commands.command()
-    async def currentav(self, ctx, user: discord.User):
-        current_avatar = self.fetch_current_avatar(user.id)
-        await ctx.send(f"```Current Avatar for {user.name}:\n{current_avatar}```")
-
-    def fetch_current_avatar(self, user_id):
-        # Fetch current avatar from the database
-        return "ExampleCurrentAvatar"  # Placeholder
-
 if __name__ == "__main__":
-    bot = SelfBot("config.json")
-    bot.run(bot.config["token"])
+    bot = SelfBot()
+    bot.run(os.getenv("TOKEN"))
