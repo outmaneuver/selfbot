@@ -8,6 +8,7 @@ from utils.user_info import store_user_info
 from utils.rate_limiter import RateLimiter
 import asyncio
 import time
+import cachetools
 
 load_dotenv()
 
@@ -17,6 +18,7 @@ class SelfBot(commands.Bot):
         self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client = determine_database()
         self.load_cogs()
         self.rate_limiter = RateLimiter()
+        self.local_cache = cachetools.LRUCache(maxsize=1000)
 
     def load_cogs(self):
         for filename in os.listdir('./cogs'):
@@ -71,6 +73,18 @@ class SelfBot(commands.Bot):
         except Exception as e:
             print(f"Error making API call: {e}")
             raise
+
+    def fetch_from_cache(self, key):
+        if self.redis_client:
+            return self.redis_client.get(key)
+        else:
+            return self.local_cache.get(key)
+
+    def store_in_cache(self, key, value):
+        if self.redis_client:
+            self.redis_client.set(key, value)
+        else:
+            self.local_cache[key] = value
 
 if __name__ == "__main__":
     bot = SelfBot()

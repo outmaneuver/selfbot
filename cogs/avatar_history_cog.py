@@ -8,7 +8,8 @@ from utils.database import (
     fetch_avatar_history_sqlite,
     fetch_avatar_history_mongodb,
     fetch_avatar_history_mysql,
-    fetch_avatar_history_redis
+    fetch_avatar_history_redis,
+    fetch_avatar_history_cache
 )
 
 class AvatarHistoryCog(commands.Cog):
@@ -18,6 +19,7 @@ class AvatarHistoryCog(commands.Cog):
         self.mongo_client = connect_mongodb()
         self.mysql_conn = connect_mysql()
         self.redis_client = connect_redis()
+        self.local_cache = bot.local_cache
 
     @commands.command(name='avhistory')
     async def avatar_history(self, ctx, user: discord.User):
@@ -29,14 +31,16 @@ class AvatarHistoryCog(commands.Cog):
 
     def fetch_avatar_history(self, user_id):
         avatar_history = []
+        if self.redis_client:
+            avatar_history.extend(fetch_avatar_history_redis(self.redis_client, user_id))
+        else:
+            avatar_history.extend(fetch_avatar_history_cache(self.local_cache, user_id))
         if self.local_db_conn:
             avatar_history.extend(fetch_avatar_history_sqlite(self.local_db_conn, user_id))
         if self.mongo_client:
             avatar_history.extend(fetch_avatar_history_mongodb(self.mongo_client, user_id))
         if self.mysql_conn:
             avatar_history.extend(fetch_avatar_history_mysql(self.mysql_conn, user_id))
-        if self.redis_client:
-            avatar_history.extend(fetch_avatar_history_redis(self.redis_client, user_id))
         return avatar_history
 
 def setup(bot):
