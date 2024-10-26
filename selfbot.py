@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 import importlib
 from utils.database import determine_database, store_custom_activity_settings, retrieve_custom_activity_settings
 from utils.user_info import store_user_info
+from utils.rate_limiter import RateLimiter
+import asyncio
+import time
 
 load_dotenv()
 
@@ -13,6 +16,7 @@ class SelfBot(commands.Bot):
         super().__init__(command_prefix=os.getenv("PREFIX"))
         self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client = determine_database()
         self.load_cogs()
+        self.rate_limiter = RateLimiter()
 
     def load_cogs(self):
         for filename in os.listdir('./cogs'):
@@ -54,6 +58,19 @@ class SelfBot(commands.Bot):
             store_custom_activity_settings(self.user.id, settings, self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client)
         except Exception as e:
             print(f"Error saving custom activity settings: {e}")
+
+    async def api_call(self, *args, **kwargs):
+        await self.rate_limiter.wait()
+        try:
+            response = await super().api_call(*args, **kwargs)
+            if response.status == 429:
+                retry_after = response.headers.get("Retry-After")
+                if retry_after:
+                    self.rate_limiter.update_rate_limit(float(retry_after))
+            return response
+        except Exception as e:
+            print(f"Error making API call: {e}")
+            raise
 
 if __name__ == "__main__":
     bot = SelfBot()
