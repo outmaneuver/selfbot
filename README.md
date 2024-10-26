@@ -22,7 +22,7 @@ The output will be formatted in codeblocks.
 
 ## Configuration
 
-To configure the selfbot, you need to provide the necessary database connection details in the configuration file. The selfbot supports the following configuration options:
+To configure the selfbot, you need to provide the necessary database connection details in the `.env` file. The selfbot supports the following configuration options:
 
 - Local database
 - MongoDB
@@ -42,7 +42,7 @@ To configure the selfbot, you need to provide the necessary database connection 
    pip install -r requirements.txt
    ```
 
-3. Configure the selfbot by editing the configuration file with your database connection details.
+3. Configure the selfbot by editing the `.env` file with your database connection details and other configurations.
 
 4. Run the selfbot:
    ```
