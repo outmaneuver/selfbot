@@ -15,6 +15,7 @@ This selfbot utilizes a local database and has the option to utilize external da
 - Modularized database connection logic for better code organization
 - Determines which database to use if other databases aren't configured
 - Warns the user if other databases aren't set up and uses a local database
+- Global rate limiter utilizing the retry-after response from Discord
 
 ## Commands
 
