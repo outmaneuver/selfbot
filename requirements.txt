@@ -1,0 +1,4 @@
+discord.py-self
+pymongo
+mysql-connector-python
+redis
