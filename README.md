@@ -17,6 +17,12 @@ This selfbot utilizes a local database and has the option to utilize external da
 - `!namehistory <user>`: Request a user's name history
 - `!avhistory <user>`: Request a user's avatar history
 - `!currentav <user>`: Request a user's current avatar
+- `!kick <user> [reason]`: Kick a user from the server
+- `!ban <user> [reason]`: Ban a user from the server
+- `!masskick <user1> <user2> ... [reason]`: Kick multiple users from the server
+- `!massban <user1> <user2> ... [reason]`: Ban multiple users from the server
+- `!kickrole <role> [reason]`: Kick all users with a specific role from the server
+- `!banrole <role> [reason]`: Ban all users with a specific role from the server
 
 The output will be formatted in codeblocks.
 
