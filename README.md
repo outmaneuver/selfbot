@@ -13,6 +13,8 @@ This selfbot utilizes a local database and has the option to utilize external da
 - Stores username, avatar, and display name changes
 - Global error handler for better error management
 - Modularized database connection logic for better code organization
+- Determines which database to use if other databases aren't configured
+- Warns the user if other databases aren't set up and uses a local database
 
 ## Commands
 
@@ -36,6 +38,8 @@ To configure the selfbot, you need to provide the necessary database connection 
 - MongoDB
 - MySQL
 - Redis
+
+If no external databases are configured, the selfbot will set up a local database and warn the user.
 
 ## Setup and Running
 
