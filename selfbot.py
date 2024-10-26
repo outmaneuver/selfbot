@@ -54,6 +54,12 @@ class SelfBot(commands.Bot):
         except redis.RedisError as e:
             print(f"Redis error: {e}")
 
+        # Check if any database is configured
+        if not any([self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client]):
+            print("No external databases configured. Setting up a local database.")
+            self.local_db_conn = sqlite3.connect("default_local_db.sqlite")
+            print("Warning: Using local database as no other databases are configured.")
+
     def load_cogs(self):
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
