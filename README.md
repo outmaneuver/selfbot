@@ -2,7 +2,7 @@
 
 ## Description
 
-This selfbot utilizes a local database and has the option to utilize external databases such as MongoDB, MySQL, and Redis. It handles multiple users and subscribes to guilds, storing username, avatar, and display name changes of users for every guild a user using the selfbot is in.
+This selfbot utilizes a local database and has the option to utilize external databases such as MongoDB, MySQL, and Redis. It handles multiple users and subscribes to guilds, storing username, avatar, and display name changes of users for every guild a user using the selfbot is in. Redis is now utilized as a cache rather than a database.
 
 ## Features
 
@@ -16,6 +16,8 @@ This selfbot utilizes a local database and has the option to utilize external da
 - Determines which database to use if other databases aren't configured
 - Warns the user if other databases aren't set up and uses a local database
 - Global rate limiter utilizing the retry-after response from Discord
+- Redis caching for avatar and name history
+- Caching for other functionalities even if no external database is set up
 
 ## Commands
 
@@ -40,9 +42,9 @@ To configure the selfbot, you need to provide the necessary database connection 
 - Local database
 - MongoDB
 - MySQL
-- Redis
+- Redis (used as a cache)
 
-If no external databases are configured, the selfbot will set up a local database and warn the user.
+If no external databases are configured, the selfbot will set up a local database and warn the user. Redis will be used as a cache for avatar and name history, as well as other functionalities. If Redis is not set up, an alternative caching mechanism will be used.
 
 ## Setup and Running
 

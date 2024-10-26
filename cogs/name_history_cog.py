@@ -8,7 +8,8 @@ from utils.database import (
     fetch_name_history_sqlite,
     fetch_name_history_mongodb,
     fetch_name_history_mysql,
-    fetch_name_history_redis
+    fetch_name_history_redis,
+    fetch_name_history_cache
 )
 
 class NameHistoryCog(commands.Cog):
@@ -18,6 +19,7 @@ class NameHistoryCog(commands.Cog):
         self.mongo_client = connect_mongodb()
         self.mysql_conn = connect_mysql()
         self.redis_client = connect_redis()
+        self.local_cache = bot.local_cache
 
     @commands.command(name='namehistory')
     async def name_history(self, ctx, user: discord.User):
@@ -29,14 +31,16 @@ class NameHistoryCog(commands.Cog):
 
     def fetch_name_history(self, user_id):
         name_history = []
+        if self.redis_client:
+            name_history.extend(fetch_name_history_redis(self.redis_client, user_id))
+        else:
+            name_history.extend(fetch_name_history_cache(self.local_cache, user_id))
         if self.local_db_conn:
             name_history.extend(fetch_name_history_sqlite(self.local_db_conn, user_id))
         if self.mongo_client:
             name_history.extend(fetch_name_history_mongodb(self.mongo_client, user_id))
         if self.mysql_conn:
             name_history.extend(fetch_name_history_mysql(self.mysql_conn, user_id))
-        if self.redis_client:
-            name_history.extend(fetch_name_history_redis(self.redis_client, user_id))
         return name_history
 
 def setup(bot):

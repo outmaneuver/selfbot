@@ -42,7 +42,8 @@ def connect_redis():
             return redis.StrictRedis(
                 host=os.getenv("REDIS_HOST"),
                 port=os.getenv("REDIS_PORT"),
-                password=os.getenv("REDIS_PASSWORD")
+                password=os.getenv("REDIS_PASSWORD"),
+                decode_responses=True
             )
     except redis.RedisError as e:
         print(f"Redis error: {e}")
@@ -78,7 +79,7 @@ def fetch_avatar_history_mysql(conn, user_id):
 
 def fetch_avatar_history_redis(client, user_id):
     avatars = client.lrange(f"avatar_history:{user_id}", 0, -1)
-    return [avatar.decode("utf-8") for avatar in avatars]
+    return avatars
 
 def fetch_name_history_sqlite(conn, user_id):
     cursor = conn.cursor()
@@ -97,7 +98,7 @@ def fetch_name_history_mysql(conn, user_id):
 
 def fetch_name_history_redis(client, user_id):
     names = client.lrange(f"name_history:{user_id}", 0, -1)
-    return [name.decode("utf-8") for name in names]
+    return names
 
 def store_user_info(user, local_db_conn, mongo_client, mysql_conn, redis_client):
     try:
@@ -206,3 +207,18 @@ def retrieve_custom_activity_settings(user_id, local_db_conn, mongo_client, mysq
         print(f"Redis error while retrieving custom activity settings: {e}")
 
     return settings
+
+def fetch_avatar_history_cache(cache, user_id):
+    return cache.get(f"avatar_history:{user_id}", [])
+
+def fetch_name_history_cache(cache, user_id):
+    return cache.get(f"name_history:{user_id}", [])
+
+def store_user_info_cache(user, cache):
+    cache[f"user_info:{user.id}"] = {"name": user.name, "avatar": user.avatar, "display_name": user.display_name}
+
+def store_custom_activity_settings_cache(user_id, settings, cache):
+    cache[f"custom_activity_settings:{user_id}"] = settings
+
+def retrieve_custom_activity_settings_cache(user_id, cache):
+    return cache.get(f"custom_activity_settings:{user_id}")
