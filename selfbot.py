@@ -21,23 +21,38 @@ class SelfBot(commands.Bot):
         self.load_cogs()
 
     def setup_databases(self):
-        if os.getenv("LOCAL_DB_PATH"):
-            self.local_db_conn = sqlite3.connect(os.getenv("LOCAL_DB_PATH"))
-        if os.getenv("MONGODB_URI"):
-            self.mongo_client = pymongo.MongoClient(os.getenv("MONGODB_URI"))
-        if os.getenv("MYSQL_HOST"):
-            self.mysql_conn = mysql.connector.connect(
-                host=os.getenv("MYSQL_HOST"),
-                user=os.getenv("MYSQL_USER"),
-                password=os.getenv("MYSQL_PASSWORD"),
-                database=os.getenv("MYSQL_DATABASE")
-            )
-        if os.getenv("REDIS_HOST"):
-            self.redis_client = redis.StrictRedis(
-                host=os.getenv("REDIS_HOST"),
-                port=os.getenv("REDIS_PORT"),
-                password=os.getenv("REDIS_PASSWORD")
-            )
+        try:
+            if os.getenv("LOCAL_DB_PATH"):
+                self.local_db_conn = sqlite3.connect(os.getenv("LOCAL_DB_PATH"))
+        except sqlite3.Error as e:
+            print(f"SQLite error: {e}")
+        
+        try:
+            if os.getenv("MONGODB_URI"):
+                self.mongo_client = pymongo.MongoClient(os.getenv("MONGODB_URI"))
+        except pymongo.errors.PyMongoError as e:
+            print(f"MongoDB error: {e}")
+        
+        try:
+            if os.getenv("MYSQL_HOST"):
+                self.mysql_conn = mysql.connector.connect(
+                    host=os.getenv("MYSQL_HOST"),
+                    user=os.getenv("MYSQL_USER"),
+                    password=os.getenv("MYSQL_PASSWORD"),
+                    database=os.getenv("MYSQL_DATABASE")
+                )
+        except mysql.connector.Error as e:
+            print(f"MySQL error: {e}")
+        
+        try:
+            if os.getenv("REDIS_HOST"):
+                self.redis_client = redis.StrictRedis(
+                    host=os.getenv("REDIS_HOST"),
+                    port=os.getenv("REDIS_PORT"),
+                    password=os.getenv("REDIS_PASSWORD")
+                )
+        except redis.RedisError as e:
+            print(f"Redis error: {e}")
 
     def load_cogs(self):
         for filename in os.listdir('./cogs'):
@@ -60,14 +75,29 @@ class SelfBot(commands.Bot):
             "avatar": str(member.avatar_url),
             "display_name": member.display_name
         }
-        if self.local_db_conn:
-            self.store_user_info_local(user_info)
-        if self.mongo_client:
-            self.store_user_info_mongo(user_info)
-        if self.mysql_conn:
-            self.store_user_info_mysql(user_info)
-        if self.redis_client:
-            self.store_user_info_redis(user_info)
+        try:
+            if self.local_db_conn:
+                self.store_user_info_local(user_info)
+        except sqlite3.Error as e:
+            print(f"SQLite error: {e}")
+        
+        try:
+            if self.mongo_client:
+                self.store_user_info_mongo(user_info)
+        except pymongo.errors.PyMongoError as e:
+            print(f"MongoDB error: {e}")
+        
+        try:
+            if self.mysql_conn:
+                self.store_user_info_mysql(user_info)
+        except mysql.connector.Error as e:
+            print(f"MySQL error: {e}")
+        
+        try:
+            if self.redis_client:
+                self.store_user_info_redis(user_info)
+        except redis.RedisError as e:
+            print(f"Redis error: {e}")
 
     def store_user_info_local(self, user_info):
         cursor = self.local_db_conn.cursor()
