@@ -55,6 +55,55 @@ To configure the selfbot, you need to provide the necessary database connection 
    python selfbot.py
    ```
 
+## Examples
+
+Here are some examples of how to use the commands:
+
+- Request a user's name history:
+  ```
+  !namehistory @username
+  ```
+
+- Request a user's avatar history:
+  ```
+  !avhistory @username
+  ```
+
+- Request a user's current avatar:
+  ```
+  !currentav @username
+  ```
+
+- Kick a user from the server:
+  ```
+  !kick @username [reason]
+  ```
+
+- Ban a user from the server:
+  ```
+  !ban @username [reason]
+  ```
+
+- Kick multiple users from the server:
+  ```
+  !masskick @username1 @username2 ... [reason]
+  ```
+
+- Ban multiple users from the server:
+  ```
+  !massban @username1 @username2 ... [reason]
+  ```
+
+- Kick all users with a specific role from the server:
+  ```
+  !kickrole @role [reason]
+  ```
+
+- Ban all users with a specific role from the server:
+  ```
+  !banrole @role [reason]
+  ```
+
 ## Library
 
 This selfbot utilizes the `discord.py-self` library for its functionality.
