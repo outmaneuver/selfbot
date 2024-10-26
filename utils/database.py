@@ -131,3 +131,78 @@ def store_user_info(user, local_db_conn, mongo_client, mysql_conn, redis_client)
             redis_client.hmset(f"user_info:{user.id}", {"name": user.name, "avatar": user.avatar, "display_name": user.display_name})
     except redis.RedisError as e:
         print(f"Redis error while storing user info: {e}")
+
+def store_custom_activity_settings(user_id, settings, local_db_conn, mongo_client, mysql_conn, redis_client):
+    try:
+        if local_db_conn:
+            cursor = local_db_conn.cursor()
+            cursor.execute("INSERT OR REPLACE INTO custom_activity_settings (user_id, settings) VALUES (?, ?)",
+                           (user_id, settings))
+            local_db_conn.commit()
+    except sqlite3.Error as e:
+        print(f"SQLite error while storing custom activity settings: {e}")
+
+    try:
+        if mongo_client:
+            db = mongo_client[os.getenv("MONGODB_DATABASE")]
+            collection = db["custom_activity_settings"]
+            collection.update_one({"user_id": user_id}, {"$set": {"settings": settings}}, upsert=True)
+    except pymongo.errors.PyMongoError as e:
+        print(f"MongoDB error while storing custom activity settings: {e}")
+
+    try:
+        if mysql_conn:
+            cursor = mysql_conn.cursor()
+            cursor.execute("INSERT INTO custom_activity_settings (user_id, settings) VALUES (%s, %s) ON DUPLICATE KEY UPDATE settings = %s",
+                           (user_id, settings, settings))
+            mysql_conn.commit()
+    except mysql.connector.Error as e:
+        print(f"MySQL error while storing custom activity settings: {e}")
+
+    try:
+        if redis_client:
+            redis_client.hmset(f"custom_activity_settings:{user_id}", {"settings": settings})
+    except redis.RedisError as e:
+        print(f"Redis error while storing custom activity settings: {e}")
+
+def retrieve_custom_activity_settings(user_id, local_db_conn, mongo_client, mysql_conn, redis_client):
+    settings = None
+    try:
+        if local_db_conn:
+            cursor = local_db_conn.cursor()
+            cursor.execute("SELECT settings FROM custom_activity_settings WHERE user_id = ?", (user_id,))
+            result = cursor.fetchone()
+            if result:
+                settings = result[0]
+    except sqlite3.Error as e:
+        print(f"SQLite error while retrieving custom activity settings: {e}")
+
+    try:
+        if mongo_client and not settings:
+            db = mongo_client[os.getenv("MONGODB_DATABASE")]
+            collection = db["custom_activity_settings"]
+            result = collection.find_one({"user_id": user_id})
+            if result:
+                settings = result["settings"]
+    except pymongo.errors.PyMongoError as e:
+        print(f"MongoDB error while retrieving custom activity settings: {e}")
+
+    try:
+        if mysql_conn and not settings:
+            cursor = mysql_conn.cursor()
+            cursor.execute("SELECT settings FROM custom_activity_settings WHERE user_id = %s", (user_id,))
+            result = cursor.fetchone()
+            if result:
+                settings = result[0]
+    except mysql.connector.Error as e:
+        print(f"MySQL error while retrieving custom activity settings: {e}")
+
+    try:
+        if redis_client and not settings:
+            settings = redis_client.hget(f"custom_activity_settings:{user_id}", "settings")
+            if settings:
+                settings = settings.decode("utf-8")
+    except redis.RedisError as e:
+        print(f"Redis error while retrieving custom activity settings: {e}")
+
+    return settings

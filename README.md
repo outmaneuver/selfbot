@@ -122,6 +122,35 @@ Here are some examples of how to use the commands:
   !clearactivity
   ```
 
+## Rich Presence Elements
+
+The custom activity now supports setting rich presence elements. Here are the available elements and their descriptions:
+
+- `status`: Enable or disable the status (True/False)
+- `presence`: Enable or disable the presence (True/False)
+- `type`: The type of activity (e.g., gaming, streaming, etc.)
+- `mode`: The mode of the activity (e.g., idle, dnd, etc.)
+- `application_id`: The application ID for the activity
+- `url`: The URL for the activity (requires a valid Twitch stream URL)
+- `details`: Additional details about the activity
+- `state`: The state of the activity
+- `name`: The name of the activity
+- `timestamp`: Enable or disable the timestamp (True/False)
+- `hidden`: Hide or show the activity (True/False)
+- `party`: Enable or disable the party (True/False)
+- `party_size_min`: The minimum party size
+- `party_size_max`: The maximum party size
+- `small_text`: Small text for the activity
+- `large_text`: Large text for the activity
+- `small_image_key`: The key for the small image
+- `large_image_key`: The key for the large image
+- `button_one`: The first button (URL and text)
+- `button_two`: The second button (URL and text)
+
+## Storing Custom Activity Settings
+
+To store custom activity settings so they persist across sessions, the selfbot supports storing the settings in both local and external databases. The settings will be loaded on startup and saved when they are set.
+
 ## Library
 
 This selfbot utilizes the `discord.py-self` library for its functionality.

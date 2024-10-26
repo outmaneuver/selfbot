@@ -3,7 +3,7 @@ from discord.ext import commands
 import os
 from dotenv import load_dotenv
 import importlib
-from utils.database import determine_database
+from utils.database import determine_database, store_custom_activity_settings, retrieve_custom_activity_settings
 from utils.user_info import store_user_info
 
 load_dotenv()
@@ -23,6 +23,7 @@ class SelfBot(commands.Bot):
 
     async def on_ready(self):
         print(f'Logged in as {self.user}')
+        await self.load_custom_activity_settings()
 
     async def on_member_update(self, before, after):
         if before.name != after.name or before.avatar != after.avatar or before.display_name != after.display_name:
@@ -39,6 +40,20 @@ class SelfBot(commands.Bot):
             await ctx.send("There was an error while executing the command.")
         else:
             await ctx.send("An unexpected error occurred. Please try again later.")
+
+    async def load_custom_activity_settings(self):
+        try:
+            settings = retrieve_custom_activity_settings(self.user.id, self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client)
+            if settings:
+                await self.change_presence(activity=discord.Activity(**settings))
+        except Exception as e:
+            print(f"Error loading custom activity settings: {e}")
+
+    async def save_custom_activity_settings(self, settings):
+        try:
+            store_custom_activity_settings(self.user.id, settings, self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client)
+        except Exception as e:
+            print(f"Error saving custom activity settings: {e}")
 
 if __name__ == "__main__":
     bot = SelfBot()
