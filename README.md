@@ -53,4 +53,24 @@ This selfbot utilizes a local database and has the option to utilize external da
 - `!setactivity <activity_type> <activity_name>`: Set a custom activity status
 - `!clearactivity`: Clear the custom activity status
 
-For detailed command examples and rich presence elements, please refer to the [COMMANDS.md](COMMANDS.md) file.
+## Rich Presence Elements
+
+### Playing
+
+- `!setactivity playing <game_name>`: Set the activity to "Playing <game_name>".
+
+### Streaming
+
+- `!setactivity streaming <stream_name> url=<stream_url>`: Set the activity to "Streaming <stream_name>" with the specified URL.
+
+### Listening
+
+- `!setactivity listening <music_name>`: Set the activity to "Listening to <music_name>".
+
+### Watching
+
+- `!setactivity watching <show_name>`: Set the activity to "Watching <show_name>".
+
+### Custom
+
+- `!setactivity custom <custom_name> state=<state> details=<details> application_id=<application_id> url=<url> timestamps=<timestamps> assets=<assets> party=<party> secrets=<secrets> instance=<instance> buttons=<buttons>`: Set a custom activity with the specified parameters.

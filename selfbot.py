@@ -12,13 +12,36 @@ import cachetools
 
 load_dotenv()
 
+class DatabaseManager:
+    def __init__(self):
+        self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client = determine_database()
+
+    def store_user_info(self, user):
+        store_user_info(user, self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client)
+
+    def store_custom_activity_settings(self, user_id, settings):
+        store_custom_activity_settings(user_id, settings, self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client)
+
+    def retrieve_custom_activity_settings(self, user_id):
+        return retrieve_custom_activity_settings(user_id, self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client)
+
+class CacheManager:
+    def __init__(self):
+        self.local_cache = cachetools.LRUCache(maxsize=1000)
+
+    def fetch_from_cache(self, key):
+        return self.local_cache.get(key)
+
+    def store_in_cache(self, key, value):
+        self.local_cache[key] = value
+
 class SelfBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=os.getenv("PREFIX"))
-        self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client = determine_database()
+        self.database_manager = DatabaseManager()
+        self.cache_manager = CacheManager()
         self.load_cogs()
         self.rate_limiter = RateLimiter()
-        self.local_cache = cachetools.LRUCache(maxsize=1000)
 
     def load_cogs(self):
         for filename in os.listdir('./cogs'):
@@ -33,7 +56,7 @@ class SelfBot(commands.Bot):
 
     async def on_member_update(self, before, after):
         if before.name != after.name or before.avatar != after.avatar or before.display_name != after.display_name:
-            store_user_info(after, self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client)
+            self.database_manager.store_user_info(after)
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandNotFound):
@@ -49,7 +72,7 @@ class SelfBot(commands.Bot):
 
     async def load_custom_activity_settings(self):
         try:
-            settings = retrieve_custom_activity_settings(self.user.id, self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client)
+            settings = self.database_manager.retrieve_custom_activity_settings(self.user.id)
             if settings:
                 await self.change_presence(activity=discord.Activity(**settings))
         except Exception as e:
@@ -57,7 +80,7 @@ class SelfBot(commands.Bot):
 
     async def save_custom_activity_settings(self, settings):
         try:
-            store_custom_activity_settings(self.user.id, settings, self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client)
+            self.database_manager.store_custom_activity_settings(self.user.id, settings)
         except Exception as e:
             print(f"Error saving custom activity settings: {e}")
 
@@ -75,16 +98,10 @@ class SelfBot(commands.Bot):
             raise
 
     def fetch_from_cache(self, key):
-        if self.redis_client:
-            return self.redis_client.get(key)
-        else:
-            return self.local_cache.get(key)
+        return self.cache_manager.fetch_from_cache(key)
 
     def store_in_cache(self, key, value):
-        if self.redis_client:
-            self.redis_client.set(key, value)
-        else:
-            self.local_cache[key] = value
+        self.cache_manager.store_in_cache(key, value)
 
 if __name__ == "__main__":
     bot = SelfBot()
