@@ -12,6 +12,14 @@ This selfbot utilizes a local database and has the option to utilize external da
 - Subscribes to guilds
 - Stores username, avatar, and display name changes
 
+## Commands
+
+- `!namehistory <user>`: Request a user's name history
+- `!avhistory <user>`: Request a user's avatar history
+- `!currentav <user>`: Request a user's current avatar
+
+The output will be formatted in codeblocks.
+
 ## Configuration
 
 To configure the selfbot, you need to provide the necessary database connection details in the configuration file. The selfbot supports the following configuration options:

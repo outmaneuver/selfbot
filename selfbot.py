@@ -15,6 +15,7 @@ class SelfBot(commands.Bot):
         self.mysql_conn = None
         self.redis_client = None
         self.setup_databases()
+        self.add_cogs()
 
     def load_config(self, config_file):
         with open(config_file, 'r') as f:
@@ -38,6 +39,11 @@ class SelfBot(commands.Bot):
                 port=self.config["redis"]["port"],
                 password=self.config["redis"]["password"]
             )
+
+    def add_cogs(self):
+        self.add_cog(NameHistoryCog(self))
+        self.add_cog(AvatarHistoryCog(self))
+        self.add_cog(CurrentAvatarCog(self))
 
     async def on_ready(self):
         print(f'Logged in as {self.user}')
@@ -93,6 +99,47 @@ class SelfBot(commands.Bot):
 
     def store_user_info_redis(self, user_info):
         self.redis_client.hmset(f"user:{user_info['id']}", user_info)
+
+class NameHistoryCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command()
+    async def namehistory(self, ctx, user: discord.User):
+        name_history = self.fetch_name_history(user.id)
+        formatted_history = "\n".join(name_history)
+        await ctx.send(f"```Name History for {user.name}:\n{formatted_history}```")
+
+    def fetch_name_history(self, user_id):
+        # Fetch name history from the database
+        return ["ExampleName1", "ExampleName2"]  # Placeholder
+
+class AvatarHistoryCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command()
+    async def avhistory(self, ctx, user: discord.User):
+        avatar_history = self.fetch_avatar_history(user.id)
+        formatted_history = "\n".join(avatar_history)
+        await ctx.send(f"```Avatar History for {user.name}:\n{formatted_history}```")
+
+    def fetch_avatar_history(self, user_id):
+        # Fetch avatar history from the database
+        return ["ExampleAvatar1", "ExampleAvatar2"]  # Placeholder
+
+class CurrentAvatarCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command()
+    async def currentav(self, ctx, user: discord.User):
+        current_avatar = self.fetch_current_avatar(user.id)
+        await ctx.send(f"```Current Avatar for {user.name}:\n{current_avatar}```")
+
+    def fetch_current_avatar(self, user_id):
+        # Fetch current avatar from the database
+        return "ExampleCurrentAvatar"  # Placeholder
 
 if __name__ == "__main__":
     bot = SelfBot("config.json")
