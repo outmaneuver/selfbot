@@ -38,7 +38,7 @@ class CacheManager:
 
 class SelfBot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=os.getenv("PREFIX"))
+        super().__init__(command_prefix=os.getenv("PREFIX"), help_command=None)
         self.database_manager = DatabaseManager()
         self.cache_manager = CacheManager()
         self.load_cogs()
@@ -103,48 +103,6 @@ class SelfBot(commands.Bot):
 
     def store_in_cache(self, key, value):
         self.cache_manager.store_in_cache(key, value)
-
-    @commands.command(name='help')
-    async def help_command(self, ctx, *, query=None):
-        author = os.getenv("AUTHOR")
-        version = subprocess.check_output(["git", "describe", "--tags"]).strip().decode()
-
-        if query is None:
-            categories = set()
-            for cog_name, cog in self.cogs.items():
-                categories.add(cog_name)
-
-            help_message = (
-                "```ansi\n"
-                "\u001b[0m\u001b[31mTo view category commands: \u001b[1m\u001b[34m..help <Category>\u001b[0m\n"
-                "\u001b[32mTo view help for a command: \u001b[1m\u001b[34m..help <Command>\n"
-                "\u001b[0m\n"
-                "\u001b[30m\u001b[1m\u001b[4mCategories\u001b[0m\n"
-            )
-
-            for category in categories:
-                help_message += f" \u001b[40m\u001b[35m- {category} \u001b[0m\n"
-
-            help_message += (
-                "\n"
-                "\u001b[0mMade by: \u001b[1m\u001b[37m{author}\n"
-                "\u001b[0mVersion: \u001b[1m\u001b[37m{version}\u001b[0m```"
-            )
-            await ctx.send(help_message)
-        else:
-            if query in self.cogs:
-                cog = self.cogs[query]
-                help_message = f"**{query} Commands:**\n"
-                for command in cog.get_commands():
-                    help_message += f"**{command.name}** - {command.help}\n"
-                await ctx.send(help_message)
-            else:
-                command = self.get_command(query)
-                if command:
-                    help_message = f"**{command.name}**\n{command.help}\nUsage: {command.usage}"
-                    await ctx.send(help_message)
-                else:
-                    await ctx.send("Category or command not found.")
 
 if __name__ == "__main__":
     bot = SelfBot()
