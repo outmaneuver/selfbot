@@ -3,12 +3,14 @@ from discord.ext import commands
 from utils.rate_limiter import RateLimiter
 from utils.permissions import has_permissions_to_use_external_emojis
 import asyncio
+from utils.database import DatabaseManager
 
 class AutoReactCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.user_reactions = {}
         self.rate_limiter = RateLimiter()
+        self.database_manager = DatabaseManager()
 
     @commands.command(name='react')
     @has_permissions_to_use_external_emojis()

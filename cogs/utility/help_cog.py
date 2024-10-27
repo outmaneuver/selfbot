@@ -1,10 +1,12 @@
 import discord
 from discord.ext import commands
 from utils.error_handler import error_handler
+from utils.database import DatabaseManager
 
 class HelpCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.database_manager = DatabaseManager()
 
     @commands.command(name='help')
     @error_handler

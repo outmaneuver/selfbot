@@ -3,11 +3,13 @@ from discord.ext import commands
 from utils.database import fetch_name_history
 from utils.error_handler import error_handler
 from utils.permissions import has_permissions_to_send_messages
+from utils.database import DatabaseManager
 
 class NameHistoryCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.local_cache = bot.local_cache
+        self.database_manager = DatabaseManager()
 
     @commands.command(name='namehistory')
     @error_handler
