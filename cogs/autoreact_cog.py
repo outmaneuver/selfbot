@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from utils.rate_limiter import RateLimiter
+from utils.permissions import has_permissions_to_use_external_emojis
 import asyncio
 
 class AutoReactCog(commands.Cog):
@@ -10,6 +11,7 @@ class AutoReactCog(commands.Cog):
         self.rate_limiter = RateLimiter()
 
     @commands.command(name='react')
+    @has_permissions_to_use_external_emojis()
     async def react(self, ctx, user_ids: commands.Greedy[int], *emojis):
         if not user_ids:
             user_ids = [ctx.author.id]
