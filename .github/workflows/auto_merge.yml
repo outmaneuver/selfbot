@@ -23,8 +23,7 @@ jobs:
 
       - name: Run tests
         run: |
-          # Add your test command here
-          pytest
+          pytest tests
 
   auto_merge:
     needs: run_checks
