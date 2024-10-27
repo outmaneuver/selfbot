@@ -323,11 +323,3 @@ class DatabaseManager:
                 self.redis_client.lpush(f"display_name_history:{user_id}", new_display_name)
         except redis.RedisError as e:
             print(f"Redis error while storing display name change: {e}")
-
-def determine_database():
-    local_db_conn = DatabaseConnection("sqlite").connection
-    mongo_client = DatabaseConnection("mongodb").connection
-    mysql_conn = DatabaseConnection("mysql").connection
-    redis_client = DatabaseConnection("redis").connection
-
-    return local_db_conn, mongo_client, mysql_conn, redis_client

@@ -12,6 +12,19 @@ import cachetools
 
 load_dotenv()
 
+class DatabaseManager:
+    def __init__(self):
+        self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client = determine_database()
+
+    def store_user_info(self, user):
+        store_user_info(user, self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client)
+
+    def store_custom_activity_settings(self, user_id, settings):
+        store_custom_activity_settings(user_id, settings, self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client)
+
+    def retrieve_custom_activity_settings(self, user_id):
+        return retrieve_custom_activity_settings(user_id, self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client)
+
 class CacheManager:
     def __init__(self):
         self.local_cache = cachetools.LRUCache(maxsize=1000)
