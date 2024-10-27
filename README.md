@@ -41,18 +41,27 @@ This selfbot utilizes a local database and has the option to utilize external da
 
 ## Basic Usage
 
+### Utility Cogs
+
 - `!namehistory [user]`: Request a user's name history. Defaults to the selfbot user if no user is mentioned.
 - `!avhistory [user]`: Request a user's avatar history. Defaults to the selfbot user if no user is mentioned.
 - `!currentav [user]`: Request a user's current avatar. Defaults to the selfbot user if no user is mentioned.
+- `!setactivity <activity_type> <activity_name>`: Set a custom activity status
+- `!clearactivity`: Clear the custom activity status
+- `!purge [channel_id] [delay]`: Purge a selfbot user's messages in a specified channel with an optional delay between deletions. If no channel ID is provided, it will purge messages in the current channel. The delay is in seconds and defaults to 1.0.
+- `!react [user_ids] <emojis>`: Enable auto-react for specified users with given emojis.
+- `!reactlist`: List users with auto-react enabled and their respective emojis.
+- `!help [category]`: Display help information for all categories or a specific category.
+- `!list`: List users with auto-react enabled and their respective emojis.
+
+### Moderation Cogs
+
 - `!kick <user> [reason]`: Kick a user from the server
 - `!ban <user> [reason]`: Ban a user from the server
 - `!masskick <user1> <user2> ... [reason]`: Kick multiple users from the server
 - `!massban <user1> <user2> ... [reason]`: Ban multiple users from the server
 - `!kickrole <role> [reason]`: Kick all users with a specific role from the server
 - `!banrole <role> [reason]`: Ban all users with a specific role from the server
-- `!setactivity <activity_type> <activity_name>`: Set a custom activity status
-- `!clearactivity`: Clear the custom activity status
-- `!purge [channel_id] [delay]`: Purge a selfbot user's messages in a specified channel with an optional delay between deletions. If no channel ID is provided, it will purge messages in the current channel. The delay is in seconds and defaults to 1.0.
 
 ## Rich Presence Elements
 
