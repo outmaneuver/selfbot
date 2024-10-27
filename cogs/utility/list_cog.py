@@ -1,11 +1,9 @@
 import discord
 from discord.ext import commands
-from utils.database import DatabaseManager
 
 class ListCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.database_manager = DatabaseManager()
 
     @commands.command(name='list')
     async def list_command(self, ctx):

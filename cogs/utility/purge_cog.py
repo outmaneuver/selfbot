@@ -2,13 +2,11 @@ import discord
 from discord.ext import commands
 from utils.rate_limiter import RateLimiter
 import asyncio
-from utils.database import DatabaseManager
 
 class PurgeCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.rate_limiter = RateLimiter()
-        self.database_manager = DatabaseManager()
 
     @commands.command(name='purge')
     async def purge(self, ctx, channel_id: int = None, delay: float = 1.0):
