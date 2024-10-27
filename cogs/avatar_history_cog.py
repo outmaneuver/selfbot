@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from utils.database import fetch_avatar_history
+from utils.error_handler import error_handler
 
 class AvatarHistoryCog(commands.Cog):
     def __init__(self, bot):
@@ -8,6 +9,7 @@ class AvatarHistoryCog(commands.Cog):
         self.local_cache = bot.local_cache
 
     @commands.command(name='avhistory')
+    @error_handler
     async def avatar_history(self, ctx, user: discord.User = None):
         if user is None:
             user = ctx.author
