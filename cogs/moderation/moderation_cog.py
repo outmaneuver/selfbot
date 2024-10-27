@@ -2,12 +2,10 @@ import discord
 from discord.ext import commands
 from utils.error_handler import error_handler
 from utils.permissions import has_permissions_to_send_messages
-from utils.database import DatabaseManager
 
 class ModerationCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.database_manager = DatabaseManager()
 
     async def _kick_or_ban(self, ctx, users, action, reason):
         action_func = getattr(users[0], action)
