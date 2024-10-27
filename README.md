@@ -11,6 +11,7 @@ This selfbot utilizes a local database and has the option to utilize external da
 - Handles multiple users
 - Subscribes to guilds
 - Stores username, avatar, and display name changes
+- Monitors and stores changes in username, avatar history, and display name history for indexed Discord users
 - Global error handler for better error management
 - Modularized database connection logic for better code organization
 - Determines which database to use if other databases aren't configured
