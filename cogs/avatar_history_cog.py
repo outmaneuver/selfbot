@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from utils.database import fetch_avatar_history
 from utils.error_handler import error_handler
-from utils.permissions import has_permissions_to_send_messages
+from utils.permissions import has_permissions_to_send_images
 
 class AvatarHistoryCog(commands.Cog):
     def __init__(self, bot):
@@ -11,7 +11,7 @@ class AvatarHistoryCog(commands.Cog):
 
     @commands.command(name='avhistory')
     @error_handler
-    @has_permissions_to_send_messages()
+    @has_permissions_to_send_images()
     async def avatar_history(self, ctx, user: discord.User = None):
         if user is None:
             user = ctx.author
