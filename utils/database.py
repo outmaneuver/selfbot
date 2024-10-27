@@ -204,3 +204,96 @@ def store_custom_activity_settings_cache(user_id, settings, cache):
 
 def retrieve_custom_activity_settings_cache(user_id, cache):
     return cache.get(f"custom_activity_settings:{user_id}")
+
+def store_username_change(user_id, new_username, local_db_conn, mongo_client, mysql_conn, redis_client):
+    try:
+        if local_db_conn:
+            cursor = local_db_conn.cursor()
+            cursor.execute("INSERT INTO username_history (user_id, username) VALUES (?, ?)", (user_id, new_username))
+            local_db_conn.commit()
+    except sqlite3.Error as e:
+        print(f"SQLite error while storing username change: {e}")
+
+    try:
+        if mongo_client:
+            db = mongo_client[os.getenv("MONGODB_DATABASE")]
+            collection = db["username_history"]
+            collection.insert_one({"user_id": user_id, "username": new_username})
+    except pymongo.errors.PyMongoError as e:
+        print(f"MongoDB error while storing username change: {e}")
+
+    try:
+        if mysql_conn:
+            cursor = mysql_conn.cursor()
+            cursor.execute("INSERT INTO username_history (user_id, username) VALUES (%s, %s)", (user_id, new_username))
+            mysql_conn.commit()
+    except mysql.connector.Error as e:
+        print(f"MySQL error while storing username change: {e}")
+
+    try:
+        if redis_client:
+            redis_client.lpush(f"username_history:{user_id}", new_username)
+    except redis.RedisError as e:
+        print(f"Redis error while storing username change: {e}")
+
+def store_avatar_change(user_id, new_avatar, local_db_conn, mongo_client, mysql_conn, redis_client):
+    try:
+        if local_db_conn:
+            cursor = local_db_conn.cursor()
+            cursor.execute("INSERT INTO avatar_history (user_id, avatar) VALUES (?, ?)", (user_id, new_avatar))
+            local_db_conn.commit()
+    except sqlite3.Error as e:
+        print(f"SQLite error while storing avatar change: {e}")
+
+    try:
+        if mongo_client:
+            db = mongo_client[os.getenv("MONGODB_DATABASE")]
+            collection = db["avatar_history"]
+            collection.insert_one({"user_id": user_id, "avatar": new_avatar})
+    except pymongo.errors.PyMongoError as e:
+        print(f"MongoDB error while storing avatar change: {e}")
+
+    try:
+        if mysql_conn:
+            cursor = mysql_conn.cursor()
+            cursor.execute("INSERT INTO avatar_history (user_id, avatar) VALUES (%s, %s)", (user_id, new_avatar))
+            mysql_conn.commit()
+    except mysql.connector.Error as e:
+        print(f"MySQL error while storing avatar change: {e}")
+
+    try:
+        if redis_client:
+            redis_client.lpush(f"avatar_history:{user_id}", new_avatar)
+    except redis.RedisError as e:
+        print(f"Redis error while storing avatar change: {e}")
+
+def store_display_name_change(user_id, new_display_name, local_db_conn, mongo_client, mysql_conn, redis_client):
+    try:
+        if local_db_conn:
+            cursor = local_db_conn.cursor()
+            cursor.execute("INSERT INTO display_name_history (user_id, display_name) VALUES (?, ?)", (user_id, new_display_name))
+            local_db_conn.commit()
+    except sqlite3.Error as e:
+        print(f"SQLite error while storing display name change: {e}")
+
+    try:
+        if mongo_client:
+            db = mongo_client[os.getenv("MONGODB_DATABASE")]
+            collection = db["display_name_history"]
+            collection.insert_one({"user_id": user_id, "display_name": new_display_name})
+    except pymongo.errors.PyMongoError as e:
+        print(f"MongoDB error while storing display name change: {e}")
+
+    try:
+        if mysql_conn:
+            cursor = mysql_conn.cursor()
+            cursor.execute("INSERT INTO display_name_history (user_id, display_name) VALUES (%s, %s)", (user_id, new_display_name))
+            mysql_conn.commit()
+    except mysql.connector.Error as e:
+        print(f"MySQL error while storing display name change: {e}")
+
+    try:
+        if redis_client:
+            redis_client.lpush(f"display_name_history:{user_id}", new_display_name)
+    except redis.RedisError as e:
+        print(f"Redis error while storing display name change: {e}")
