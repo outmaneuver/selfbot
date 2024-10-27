@@ -74,3 +74,14 @@ This selfbot utilizes a local database and has the option to utilize external da
 ### Custom
 
 - `!setactivity custom <custom_name> state=<state> details=<details> application_id=<application_id> url=<url> timestamps=<timestamps> assets=<assets> party=<party> secrets=<secrets> instance=<instance> buttons=<buttons>`: Set a custom activity with the specified parameters.
+
+## GitHub Actions Workflow for Automatic Merging
+
+This repository includes a GitHub Actions workflow to automatically merge pull requests if all checks pass. The workflow is defined in the `.github/workflows/auto_merge.yml` file.
+
+The workflow is triggered on pull request events and includes the following jobs:
+
+1. **Run Checks and Tests**: This job runs the necessary checks and tests to ensure the pull request meets the required standards.
+2. **Automatic Merge**: If all checks pass, this job automatically merges the pull request.
+
+To configure the workflow, make sure to update the `.github/workflows/auto_merge.yml` file with the appropriate settings for your project.
