@@ -70,21 +70,8 @@ This selfbot utilizes a local database and has the option to utilize external da
 
 ### Watching
 
-- `!setactivity watching <show_name>`: Set the activity to "Watching <show_name>".
+- `!setactivity watching <show_name>`: Set the activity to "Watching <show_name>`.
 
 ### Custom
 
 - `!setactivity custom <custom_name> state=<state> details=<details> application_id=<application_id> url=<url> timestamps=<timestamps> assets=<assets> party=<party> secrets=<secrets> instance=<instance> buttons=<buttons>`: Set a custom activity with the specified parameters.
-
-## GitHub Actions Workflow for Automatic Merging
-
-This repository includes a GitHub Actions workflow to automatically merge pull requests if all checks pass. The workflow is defined in the `.github/workflows/auto_merge.yml` file.
-
-The workflow is triggered on pull request events and includes the following jobs:
-
-1. **Run Checks and Tests**: This job runs the necessary checks and tests to ensure the pull request meets the required standards.
-2. **Automatic Merge**: If all checks pass, this job automatically merges the pull request.
-
-To configure the workflow, make sure to update the `.github/workflows/auto_merge.yml` file with the appropriate settings for your project.
-
-The check for conflicts with the base branch is implemented in the GitHub Actions workflow file `.github/workflows/auto_merge.yml`. The current implementation fetches the base branch, checks out the base branch, and attempts to merge the head branch without committing or fast-forwarding. If a conflict is detected during the merge attempt, the merge is aborted, and the workflow exits with a non-zero status. The check for conflicts is located in the `run_checks` job under the `Check for conflicts with base branch` step in `.github/workflows/auto_merge.yml`. The `git merge --abort || exit 1` command is now replaced with `git merge --abort || { echo "Merge conflict detected"; exit 1; }` to provide a clear message.
