@@ -17,17 +17,18 @@ class AutoReactCog(commands.Cog):
         for user_id in user_ids:
             if user_id not in self.user_reactions:
                 self.user_reactions[user_id] = set()
-            self.user_reactions[user_id].update(emojis)
+            if emojis:
+                self.user_reactions[user_id].update(emojis)
+            else:
+                if user_id in self.user_reactions:
+                    del self.user_reactions[user_id]
+                    await ctx.send(f"Auto-react disabled for user: {user_id}")
+                    return
 
-        await ctx.send(f"Auto-react enabled for users: {', '.join(map(str, user_ids))} with emojis: {', '.join(emojis)}")
-
-    @commands.command(name='reactstop')
-    async def react_stop(self, ctx, user_id: int):
-        if user_id in self.user_reactions:
-            del self.user_reactions[user_id]
-            await ctx.send(f"Auto-react disabled for user: {user_id}")
+        if emojis:
+            await ctx.send(f"Auto-react enabled for users: {', '.join(map(str, user_ids))} with emojis: {', '.join(emojis)}")
         else:
-            await ctx.send(f"No auto-react found for user: {user_id}")
+            await ctx.send(f"No emojis provided. Auto-react disabled for users: {', '.join(map(str, user_ids))}")
 
     @commands.command(name='reactlist')
     async def react_list(self, ctx):

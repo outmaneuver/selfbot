@@ -19,23 +19,27 @@ class HelpCog(commands.Cog):
             return
 
         if not input:
-            # No input, show all categories and commands
-            help_message = "Help\nUse `{prefix}help <category>` to get more information on a category.\n\nCategories:\n"
-            for cog in self.bot.cogs:
-                help_message += f'`{cog}` {self.bot.cogs[cog].__doc__}\n'
-            await ctx.send(f"```{help_message}```")
+            await self.send_all_categories(ctx, prefix)
         elif len(input) == 1:
-            # One input, show commands in the category
-            cog = self.bot.get_cog(input[0])
-            if cog:
-                help_message = f"{input[0]} - Commands\n{cog.__doc__}\n\n"
-                for command in cog.get_commands():
-                    help_message += f"`{prefix}{command.name}`: {command.help}\n"
-                await ctx.send(f"```{help_message}```")
-            else:
-                await ctx.send(f"Category `{input[0]}` not found.")
+            await self.send_category_commands(ctx, input[0], prefix)
         else:
             await ctx.send("Invalid input. Use `!help` to see all categories.")
+
+    async def send_all_categories(self, ctx, prefix):
+        help_message = "Help\nUse `{prefix}help <category>` to get more information on a category.\n\nCategories:\n"
+        for cog in self.bot.cogs:
+            help_message += f'`{cog}` {self.bot.cogs[cog].__doc__}\n'
+        await ctx.send(f"```{help_message}```")
+
+    async def send_category_commands(self, ctx, category, prefix):
+        cog = self.bot.get_cog(category)
+        if cog:
+            help_message = f"{category} - Commands\n{cog.__doc__}\n\n"
+            for command in cog.get_commands():
+                help_message += f"`{prefix}{command.name}`: {command.help}\n"
+            await ctx.send(f"```{help_message}```")
+        else:
+            await ctx.send(f"Category `{category}` not found.")
 
 def setup(bot):
     bot.add_cog(HelpCog(bot))
