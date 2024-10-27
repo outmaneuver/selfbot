@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from utils.database import fetch_name_history
 from utils.error_handler import error_handler
+from utils.permissions import has_permissions_to_send_messages
 
 class NameHistoryCog(commands.Cog):
     def __init__(self, bot):
@@ -10,6 +11,7 @@ class NameHistoryCog(commands.Cog):
 
     @commands.command(name='namehistory')
     @error_handler
+    @has_permissions_to_send_messages()
     async def name_history(self, ctx, user: discord.User = None):
         if user is None:
             user = ctx.author

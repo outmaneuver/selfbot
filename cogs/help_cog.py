@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from utils.error_handler import error_handler
+import os
 
 class HelpCog(commands.Cog):
     def __init__(self, bot):
@@ -13,22 +14,24 @@ class HelpCog(commands.Cog):
         version = "1.0"
         author = os.getenv("AUTHOR")
 
+        if not ctx.channel.permissions_for(ctx.author).send_messages:
+            await ctx.author.send("You do not have permission to send messages in this channel.")
+            return
+
         if not input:
             # No input, show all categories and commands
-            embed = discord.Embed(title="Help", description=f"Use `{prefix}help <category>` to get more information on a category.", color=discord.Color.blue())
-            cogs_desc = ''
+            help_message = "Help\nUse `{prefix}help <category>` to get more information on a category.\n\nCategories:\n"
             for cog in self.bot.cogs:
-                cogs_desc += f'`{cog}` {self.bot.cogs[cog].__doc__}\n'
-            embed.add_field(name='Categories', value=cogs_desc, inline=False)
-            await ctx.send(embed=embed)
+                help_message += f'`{cog}` {self.bot.cogs[cog].__doc__}\n'
+            await ctx.send(f"```{help_message}```")
         elif len(input) == 1:
             # One input, show commands in the category
             cog = self.bot.get_cog(input[0])
             if cog:
-                embed = discord.Embed(title=f"{input[0]} - Commands", description=cog.__doc__, color=discord.Color.blue())
+                help_message = f"{input[0]} - Commands\n{cog.__doc__}\n\n"
                 for command in cog.get_commands():
-                    embed.add_field(name=f"`{prefix}{command.name}`", value=command.help, inline=False)
-                await ctx.send(embed=embed)
+                    help_message += f"`{prefix}{command.name}`: {command.help}\n"
+                await ctx.send(f"```{help_message}```")
             else:
                 await ctx.send(f"Category `{input[0]}` not found.")
         else:

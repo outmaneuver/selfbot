@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from utils.error_handler import error_handler
+from utils.permissions import has_permissions_to_send_messages
 
 class CustomActivityCog(commands.Cog):
     def __init__(self, bot):
@@ -8,6 +9,7 @@ class CustomActivityCog(commands.Cog):
 
     @commands.command(name='setactivity')
     @error_handler
+    @has_permissions_to_send_messages()
     async def set_activity(self, ctx, activity_type: str, activity_name: str = None):
         activity = None
         if activity_type.lower() == 'playing':
@@ -29,6 +31,7 @@ class CustomActivityCog(commands.Cog):
 
     @commands.command(name='clearactivity')
     @error_handler
+    @has_permissions_to_send_messages()
     async def clear_activity(self, ctx):
         await self.bot.change_presence(activity=None)
         await ctx.send("Activity cleared")
