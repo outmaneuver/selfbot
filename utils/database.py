@@ -7,53 +7,35 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def connect_sqlite():
+def connect_database(db_type):
     try:
-        if os.getenv("LOCAL_DB_PATH"):
+        if db_type == "sqlite" and os.getenv("LOCAL_DB_PATH"):
             return sqlite3.connect(os.getenv("LOCAL_DB_PATH"))
-    except sqlite3.Error as e:
-        print(f"SQLite error: {e}")
-    return None
-
-def connect_mongodb():
-    try:
-        if os.getenv("MONGODB_URI"):
+        elif db_type == "mongodb" and os.getenv("MONGODB_URI"):
             return pymongo.MongoClient(os.getenv("MONGODB_URI"))
-    except pymongo.errors.PyMongoError as e:
-        print(f"MongoDB error: {e}")
-    return None
-
-def connect_mysql():
-    try:
-        if os.getenv("MYSQL_HOST"):
+        elif db_type == "mysql" and os.getenv("MYSQL_HOST"):
             return mysql.connector.connect(
                 host=os.getenv("MYSQL_HOST"),
                 user=os.getenv("MYSQL_USER"),
                 password=os.getenv("MYSQL_PASSWORD"),
                 database=os.getenv("MYSQL_DATABASE")
             )
-    except mysql.connector.Error as e:
-        print(f"MySQL error: {e}")
-    return None
-
-def connect_redis():
-    try:
-        if os.getenv("REDIS_HOST"):
+        elif db_type == "redis" and os.getenv("REDIS_HOST"):
             return redis.StrictRedis(
                 host=os.getenv("REDIS_HOST"),
                 port=os.getenv("REDIS_PORT"),
                 password=os.getenv("REDIS_PASSWORD"),
                 decode_responses=True
             )
-    except redis.RedisError as e:
-        print(f"Redis error: {e}")
+    except (sqlite3.Error, pymongo.errors.PyMongoError, mysql.connector.Error, redis.RedisError) as e:
+        print(f"{db_type.capitalize()} error: {e}")
     return None
 
 def determine_database():
-    local_db_conn = connect_sqlite()
-    mongo_client = connect_mongodb()
-    mysql_conn = connect_mysql()
-    redis_client = connect_redis()
+    local_db_conn = connect_database("sqlite")
+    mongo_client = connect_database("mongodb")
+    mysql_conn = connect_database("mysql")
+    redis_client = connect_database("redis")
 
     if not any([local_db_conn, mongo_client, mysql_conn, redis_client]):
         print("No external databases configured. Setting up a local database.")

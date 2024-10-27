@@ -45,11 +45,10 @@ class CommandHandler(commands.Bot):
         self.rate_limiter = RateLimiter()
 
     def load_cogs(self):
-        for filename in os.listdir('./cogs'):
-            if filename.endswith('.py'):
-                cog_name = filename[:-3]
-                cog_module = importlib.import_module(f'cogs.{cog_name}')
-                self.add_cog(cog_module.setup(self))
+        cog_files = [f[:-3] for f in os.listdir('./cogs') if f.endswith('.py')]
+        for cog_name in cog_files:
+            cog_module = importlib.import_module(f'cogs.{cog_name}')
+            self.add_cog(cog_module.setup(self))
 
     async def on_ready(self):
         print(f'Logged in as {self.user}')
