@@ -9,7 +9,6 @@ from utils.rate_limiter import RateLimiter
 import asyncio
 import time
 import cachetools
-import subprocess
 
 load_dotenv()
 
