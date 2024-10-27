@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 from utils.error_handler import error_handler
-import os
 
 class HelpCog(commands.Cog):
     def __init__(self, bot):
@@ -12,7 +11,7 @@ class HelpCog(commands.Cog):
     async def help_command(self, ctx, *input):
         prefix = self.bot.command_prefix
         version = "1.0"
-        author = os.getenv("AUTHOR")
+        author = "outmaneuver"
 
         if not ctx.channel.permissions_for(ctx.author).send_messages:
             await ctx.author.send("You do not have permission to send messages in this channel.")
