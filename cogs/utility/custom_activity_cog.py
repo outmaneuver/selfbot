@@ -2,10 +2,12 @@ import discord
 from discord.ext import commands
 from utils.error_handler import error_handler
 from utils.permissions import has_permissions_to_send_messages
+from utils.database import DatabaseManager
 
 class CustomActivityCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.database_manager = DatabaseManager()
 
     def create_activity(self, activity_type, activity_name):
         if activity_type.lower() == 'playing':
