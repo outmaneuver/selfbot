@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from utils.database import fetch_name_history
+from utils.error_handler import error_handler
 
 class NameHistoryCog(commands.Cog):
     def __init__(self, bot):
@@ -8,6 +9,7 @@ class NameHistoryCog(commands.Cog):
         self.local_cache = bot.local_cache
 
     @commands.command(name='namehistory')
+    @error_handler
     async def name_history(self, ctx, user: discord.User = None):
         if user is None:
             user = ctx.author
