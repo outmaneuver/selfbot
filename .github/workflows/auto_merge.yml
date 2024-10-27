@@ -31,7 +31,7 @@ jobs:
           git fetch origin
           git checkout ${{ github.event.pull_request.base.ref }}
           git merge --no-commit --no-ff ${{ github.event.pull_request.head.ref }}
-          git merge --abort || exit 1
+          git merge --abort || { echo "Merge conflict detected"; exit 1; }
 
   auto_merge:
     needs: run_checks
