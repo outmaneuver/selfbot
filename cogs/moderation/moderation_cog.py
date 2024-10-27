@@ -15,43 +15,33 @@ class ModerationCog(commands.Cog):
             affected_users.append(user.name)
         await ctx.send(f'{len(affected_users)} users have been {action}ed from the server. Reason: {reason if reason else "No reason provided"}.')
 
-    @commands.command(name='kick')
+    @commands.command(name='moderate')
     @error_handler
     @has_permissions_to_send_messages()
-    async def kick(self, ctx, user: discord.Member, *, reason=None):
-        await self._kick_or_ban(ctx, [user], 'kick', reason)
+    async def moderate(self, ctx, action: str, user: discord.Member, *, reason=None):
+        if action.lower() not in ['kick', 'ban']:
+            await ctx.send("Invalid action. Please choose 'kick' or 'ban'.")
+            return
+        await self._kick_or_ban(ctx, [user], action, reason)
 
-    @commands.command(name='ban')
+    @commands.command(name='massmoderate')
     @error_handler
     @has_permissions_to_send_messages()
-    async def ban(self, ctx, user: discord.Member, *, reason=None):
-        await self._kick_or_ban(ctx, [user], 'ban', reason)
+    async def mass_moderate(self, ctx, action: str, users: commands.Greedy[discord.Member], *, reason=None):
+        if action.lower() not in ['kick', 'ban']:
+            await ctx.send("Invalid action. Please choose 'kick' or 'ban'.")
+            return
+        await self._kick_or_ban(ctx, users, action, reason)
 
-    @commands.command(name='masskick')
+    @commands.command(name='moderaterole')
     @error_handler
     @has_permissions_to_send_messages()
-    async def mass_kick(self, ctx, users: commands.Greedy[discord.Member], *, reason=None):
-        await self._kick_or_ban(ctx, users, 'kick', reason)
-
-    @commands.command(name='massban')
-    @error_handler
-    @has_permissions_to_send_messages()
-    async def mass_ban(self, ctx, users: commands.Greedy[discord.Member], *, reason=None):
-        await self._kick_or_ban(ctx, users, 'ban', reason)
-
-    @commands.command(name='kickrole')
-    @error_handler
-    @has_permissions_to_send_messages()
-    async def kick_role(self, ctx, role: discord.Role, *, reason=None):
+    async def moderate_role(self, ctx, action: str, role: discord.Role, *, reason=None):
+        if action.lower() not in ['kick', 'ban']:
+            await ctx.send("Invalid action. Please choose 'kick' or 'ban'.")
+            return
         members = [member for member in ctx.guild.members if role in member.roles]
-        await self._kick_or_ban(ctx, members, 'kick', reason)
-
-    @commands.command(name='banrole')
-    @error_handler
-    @has_permissions_to_send_messages()
-    async def ban_role(self, ctx, role: discord.Role, *, reason=None):
-        members = [member for member in ctx.guild.members if role in member.roles]
-        await self._kick_or_ban(ctx, members, 'ban', reason)
+        await self._kick_or_ban(ctx, members, action, reason)
 
 def setup(bot):
     bot.add_cog(ModerationCog(bot))
