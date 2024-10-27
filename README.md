@@ -52,6 +52,7 @@ This selfbot utilizes a local database and has the option to utilize external da
 - `!banrole <role> [reason]`: Ban all users with a specific role from the server
 - `!setactivity <activity_type> <activity_name>`: Set a custom activity status
 - `!clearactivity`: Clear the custom activity status
+- `!purge [channel_id] [delay]`: Purge a selfbot user's messages in a specified channel with an optional delay between deletions. If no channel ID is provided, it will purge messages in the current channel. The delay is in seconds and defaults to 1.0.
 
 ## Rich Presence Elements
 
