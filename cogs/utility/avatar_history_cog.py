@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from utils.database import fetch_avatar_history
+from utils.database import fetch_avatar_history, fetch_name_history
 from utils.error_handler import error_handler
 from utils.permissions import has_permissions_to_send_images
 
@@ -29,6 +29,9 @@ class AvatarHistoryCog(commands.Cog):
 
     def fetch_avatar_history(self, user_id):
         return fetch_avatar_history(user_id, self.local_cache)
+
+    def fetch_name_history(self, user_id):
+        return fetch_name_history(user_id, self.local_cache)
 
 def setup(bot):
     bot.add_cog(AvatarHistoryCog(bot))

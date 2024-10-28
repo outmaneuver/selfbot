@@ -15,6 +15,12 @@ class UserInfoManager:
         self.redis_client = redis_client
 
     def store_user_info(self, user):
+        self._store_user_info_sqlite(user)
+        self._store_user_info_mongodb(user)
+        self._store_user_info_mysql(user)
+        self._store_user_info_redis(user)
+
+    def _store_user_info_sqlite(self, user):
         try:
             if self.local_db_conn:
                 cursor = self.local_db_conn.cursor()
@@ -24,6 +30,7 @@ class UserInfoManager:
         except sqlite3.Error as e:
             print(f"SQLite error while storing user info: {e}")
 
+    def _store_user_info_mongodb(self, user):
         try:
             if self.mongo_client:
                 db = self.mongo_client[os.getenv("MONGODB_DATABASE")]
@@ -32,6 +39,7 @@ class UserInfoManager:
         except pymongo.errors.PyMongoError as e:
             print(f"MongoDB error while storing user info: {e}")
 
+    def _store_user_info_mysql(self, user):
         try:
             if self.mysql_conn:
                 cursor = self.mysql_conn.cursor()
@@ -41,6 +49,7 @@ class UserInfoManager:
         except mysql.connector.Error as e:
             print(f"MySQL error while storing user info: {e}")
 
+    def _store_user_info_redis(self, user):
         try:
             if self.redis_client:
                 self.redis_client.hmset(f"user_info:{user.id}", {"name": user.name, "avatar": user.avatar, "display_name": user.display_name})
@@ -48,6 +57,12 @@ class UserInfoManager:
             print(f"Redis error while storing user info: {e}")
 
     def monitor_user_info_changes(self, user):
+        self._monitor_user_info_changes_sqlite(user)
+        self._monitor_user_info_changes_mongodb(user)
+        self._monitor_user_info_changes_mysql(user)
+        self._monitor_user_info_changes_redis(user)
+
+    def _monitor_user_info_changes_sqlite(self, user):
         try:
             if self.local_db_conn:
                 cursor = self.local_db_conn.cursor()
@@ -60,6 +75,7 @@ class UserInfoManager:
         except sqlite3.Error as e:
             print(f"SQLite error while monitoring user info changes: {e}")
 
+    def _monitor_user_info_changes_mongodb(self, user):
         try:
             if self.mongo_client:
                 db = self.mongo_client[os.getenv("MONGODB_DATABASE")]
@@ -72,6 +88,7 @@ class UserInfoManager:
         except pymongo.errors.PyMongoError as e:
             print(f"MongoDB error while monitoring user info changes: {e}")
 
+    def _monitor_user_info_changes_mysql(self, user):
         try:
             if self.mysql_conn:
                 cursor = self.mysql_conn.cursor()
@@ -84,6 +101,7 @@ class UserInfoManager:
         except mysql.connector.Error as e:
             print(f"MySQL error while monitoring user info changes: {e}")
 
+    def _monitor_user_info_changes_redis(self, user):
         try:
             if self.redis_client:
                 result = self.redis_client.hgetall(f"user_info:{user.id}")
