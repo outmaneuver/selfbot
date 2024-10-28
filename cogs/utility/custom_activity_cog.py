@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from utils.error_handler import error_handler
 from utils.permissions import has_permissions_to_send_messages
+from discord import ActivityType
 
 class CustomActivityCog(commands.Cog):
     def __init__(self, bot):
@@ -13,11 +14,11 @@ class CustomActivityCog(commands.Cog):
         elif activity_type.lower() == 'streaming':
             return discord.Streaming(name=activity_name, url='https://twitch.tv/streamer')
         elif activity_type.lower() == 'listening':
-            return discord.Activity(type=discord.ActivityType.listening, name=activity_name)
+            return discord.Activity(type=ActivityType.listening, name=activity_name)
         elif activity_type.lower() == 'watching':
-            return discord.Activity(type=discord.ActivityType.watching, name=activity_name)
+            return discord.Activity(type=ActivityType.watching, name=activity_name)
         elif activity_type.lower() == 'custom':
-            return discord.Activity(type=discord.ActivityType.custom, name=activity_name)
+            return discord.Activity(type=ActivityType.custom, name=activity_name)
         else:
             return None
 
