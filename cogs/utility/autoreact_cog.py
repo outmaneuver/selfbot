@@ -18,13 +18,7 @@ class AutoReactCog(commands.Cog):
             return
 
         if action.lower() == 'list':
-            if self.user_reactions:
-                response = "Auto-react enabled for the following users:\n"
-                for user_id, emojis in self.user_reactions.items():
-                    response += f"User ID: {user_id}, Emojis: {', '.join(emojis)}\n"
-                await ctx.send(f"```{response}```")
-            else:
-                await ctx.send("No users have auto-react enabled.")
+            await self.list_reactions(ctx)
             return
 
         if not user_ids:
@@ -32,14 +26,29 @@ class AutoReactCog(commands.Cog):
 
         for user_id in user_ids:
             if action.lower() == 'enable':
-                if user_id not in self.user_reactions:
-                    self.user_reactions[user_id] = set()
-                self.user_reactions[user_id].update(emojis)
-                await ctx.send(f"Auto-react enabled for user: {user_id} with emojis: {', '.join(emojis)}")
+                await self.enable_reactions(ctx, user_id, emojis)
             elif action.lower() == 'disable':
-                if user_id in self.user_reactions:
-                    del self.user_reactions[user_id]
-                    await ctx.send(f"Auto-react disabled for user: {user_id}")
+                await self.disable_reactions(ctx, user_id)
+
+    async def list_reactions(self, ctx):
+        if self.user_reactions:
+            response = "Auto-react enabled for the following users:\n"
+            for user_id, emojis in self.user_reactions.items():
+                response += f"User ID: {user_id}, Emojis: {', '.join(emojis)}\n"
+            await ctx.send(f"```{response}```")
+        else:
+            await ctx.send("No users have auto-react enabled.")
+
+    async def enable_reactions(self, ctx, user_id, emojis):
+        if user_id not in self.user_reactions:
+            self.user_reactions[user_id] = set()
+        self.user_reactions[user_id].update(emojis)
+        await ctx.send(f"Auto-react enabled for user: {user_id} with emojis: {', '.join(emojis)}")
+
+    async def disable_reactions(self, ctx, user_id):
+        if user_id in self.user_reactions:
+            del self.user_reactions[user_id]
+            await ctx.send(f"Auto-react disabled for user: {user_id}")
 
     @commands.Cog.listener()
     async def on_message(self, message):

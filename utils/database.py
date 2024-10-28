@@ -7,41 +7,70 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-class DatabaseConnection:
-    def __init__(self, db_type):
-        self.db_type = db_type
+class SQLiteConnection:
+    def __init__(self):
         self.connection = self.connect_database()
 
     def connect_database(self):
         try:
-            if self.db_type == "sqlite" and os.getenv("LOCAL_DB_PATH"):
+            if os.getenv("LOCAL_DB_PATH"):
                 return sqlite3.connect(os.getenv("LOCAL_DB_PATH"))
-            elif self.db_type == "mongodb" and os.getenv("MONGODB_URI"):
+        except sqlite3.Error as e:
+            print(f"SQLite error: {e}")
+        return None
+
+class MongoDBConnection:
+    def __init__(self):
+        self.connection = self.connect_database()
+
+    def connect_database(self):
+        try:
+            if os.getenv("MONGODB_URI"):
                 return pymongo.MongoClient(os.getenv("MONGODB_URI"))
-            elif self.db_type == "mysql" and os.getenv("MYSQL_HOST"):
+        except pymongo.errors.PyMongoError as e:
+            print(f"MongoDB error: {e}")
+        return None
+
+class MySQLConnection:
+    def __init__(self):
+        self.connection = self.connect_database()
+
+    def connect_database(self):
+        try:
+            if os.getenv("MYSQL_HOST"):
                 return mysql.connector.connect(
                     host=os.getenv("MYSQL_HOST"),
                     user=os.getenv("MYSQL_USER"),
                     password=os.getenv("MYSQL_PASSWORD"),
                     database=os.getenv("MYSQL_DATABASE")
                 )
-            elif self.db_type == "redis" and os.getenv("REDIS_HOST"):
+        except mysql.connector.Error as e:
+            print(f"MySQL error: {e}")
+        return None
+
+class RedisConnection:
+    def __init__(self):
+        self.connection = self.connect_database()
+
+    def connect_database(self):
+        try:
+            if os.getenv("REDIS_HOST"):
                 return redis.StrictRedis(
                     host=os.getenv("REDIS_HOST"),
                     port=os.getenv("REDIS_PORT"),
                     password=os.getenv("REDIS_PASSWORD"),
                     decode_responses=True
                 )
-        except (sqlite3.Error, pymongo.errors.PyMongoError, mysql.connector.Error, redis.RedisError) as e:
-            print(f"{self.db_type.capitalize()} error: {e}")
+        except redis.RedisError as e:
+            print(f"Redis error: {e}")
         return None
 
 class DatabaseManager:
     def __init__(self):
-        self.local_db_conn = DatabaseConnection("sqlite").connection
-        self.mongo_client = DatabaseConnection("mongodb").connection
-        self.mysql_conn = DatabaseConnection("mysql").connection
-        self.redis_client = DatabaseConnection("redis").connection
+        self.local_db_conn = SQLiteConnection().connection
+        self.mongo_client = MongoDBConnection().connection
+        self.mysql_conn = MySQLConnection().connection
+        self.redis_client = RedisConnection().connection
 
         if not any([self.local_db_conn, self.mongo_client, self.mysql_conn, self.redis_client]):
             print("No external databases configured. Setting up a local database.")
