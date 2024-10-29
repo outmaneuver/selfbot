@@ -1,8 +1,8 @@
 import { Client, Message, User } from 'discord.js-selfbot-v13';
 import { Command } from 'discord-akairo';
-import { fetchNameHistory, fetchAvatarHistory } from '../../utils/database';
+import { fetchNameHistory } from '../../utils/database';
 import { errorHandler } from '../../utils/error_handler';
-import { hasPermissionsToSendMessages, hasPermissionsToSendImages } from '../../utils/permissions';
+import { hasPermissionsToSendMessages } from '../../utils/permissions';
 
 class NameHistoryCog {
     private client: Client;
@@ -23,24 +23,18 @@ class NameHistoryCog {
     @errorHandler
     @hasPermissionsToSendMessages()
     async nameHistory(message: Message, { user }: { user: User | null }) {
-        if (!user) {
-            user = message.author;
-        }
+        const targetUser = user || message.author;
 
-        const nameHistory = this.fetchNameHistory(user.id);
+        const nameHistory = this.fetchNameHistory(targetUser.id);
         if (nameHistory.length > 0) {
-            await message.channel.send(`Here's the name history for ${user.username}: ${nameHistory.join(', ')}`);
+            await message.channel.send(`Here's the name history for ${targetUser.username}: ${nameHistory.join(', ')}`);
         } else {
-            await message.channel.send(`Sorry, I couldn't find any name history for ${user.username}.`);
+            await message.channel.send(`Sorry, I couldn't find any name history for ${targetUser.username}.`);
         }
     }
 
     fetchNameHistory(userId: string) {
         return fetchNameHistory(userId, this.localCache);
-    }
-
-    fetchAvatarHistory(userId: string) {
-        return fetchAvatarHistory(userId, this.localCache);
     }
 }
 

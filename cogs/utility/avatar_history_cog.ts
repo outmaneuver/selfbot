@@ -1,16 +1,16 @@
 import { Client, Message, User } from 'discord.js-selfbot-v13';
 import { Command } from 'discord-akairo';
-import { fetchAvatarHistory, fetchNameHistory } from '../../utils/database';
 import { errorHandler } from '../../utils/error_handler';
 import { hasPermissionsToSendImages } from '../../utils/permissions';
+import DatabaseManager from '../../utils/database';
 
 class AvatarHistoryCog {
     private client: Client;
-    private localCache: any;
+    private databaseManager: DatabaseManager;
 
     constructor(client: Client) {
         this.client = client;
-        this.localCache = client.localCache;
+        this.databaseManager = new DatabaseManager();
     }
 
     @Command({
@@ -29,7 +29,7 @@ class AvatarHistoryCog {
         }
 
         if (action.toLowerCase() === 'history') {
-            const avatarHistory = this.fetchAvatarHistory(user.id);
+            const avatarHistory = await this.databaseManager.fetch_avatar_history(user.id);
             if (avatarHistory.length > 0) {
                 await message.channel.send(`Here's the avatar history for ${user.username}: ${avatarHistory.join(', ')}`);
             } else {
@@ -40,14 +40,6 @@ class AvatarHistoryCog {
         } else {
             await message.channel.send("Invalid action. Please choose 'history' or 'current'.");
         }
-    }
-
-    fetchAvatarHistory(userId: string) {
-        return fetchAvatarHistory(userId, this.localCache);
-    }
-
-    fetchNameHistory(userId: string) {
-        return fetchNameHistory(userId, this.localCache);
     }
 }
 

@@ -11,7 +11,7 @@ class CustomActivityCog {
         this.client = client;
     }
 
-    createActivity(activityType: string, activityName: string | null) {
+    private createActivity(activityType: string, activityName: string | null) {
         switch (activityType.toLowerCase()) {
             case 'playing':
                 return { type: ActivityType.Playing, name: activityName };

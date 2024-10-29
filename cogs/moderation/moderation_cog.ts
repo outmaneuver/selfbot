@@ -11,10 +11,9 @@ class ModerationCog {
     }
 
     private async _kickOrBan(message: Message, users: GuildMember[], action: 'kick' | 'ban', reason: string | null) {
-        const actionFunc = action === 'kick' ? 'kick' : 'ban';
         const affectedUsers: string[] = [];
         for (const user of users) {
-            await user[actionFunc](reason || undefined);
+            await user[action](reason || undefined);
             affectedUsers.push(user.user.username);
         }
         await message.channel.send(`${affectedUsers.length} users have been ${action}ed from the server. Reason: ${reason || 'No reason provided'}.`);

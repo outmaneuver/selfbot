@@ -35,11 +35,9 @@ class PurgeCog {
             return;
         }
 
-        const isSelfbotMessage = (msg: Message) => msg.author.id === this.client.user?.id;
-
         const messages = await channel.messages.fetch({ limit: 100 });
         for (const msg of messages.values()) {
-            if (isSelfbotMessage(msg)) {
+            if (msg.author.id === this.client.user?.id) {
                 await this.rateLimiter.wait();
                 await msg.delete();
                 await new Promise(resolve => setTimeout(resolve, delay * 1000));

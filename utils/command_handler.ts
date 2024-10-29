@@ -36,16 +36,36 @@ class CommandHandler extends Client {
     @errorHandler
     async onCommandError(message, error) {
         if (error.name === 'CommandNotFound') {
-            await message.channel.send("Sorry, I didn't understand that command.");
+            await this.handleCommandNotFoundError(message);
         } else if (error.name === 'MissingRequiredArgument') {
-            await message.channel.send("It looks like you're missing a required argument.");
+            await this.handleMissingRequiredArgumentError(message);
         } else if (error.name === 'BadArgument') {
-            await message.channel.send("There was an issue with one of the arguments you provided.");
+            await this.handleBadArgumentError(message);
         } else if (error.name === 'CommandInvokeError') {
-            await message.channel.send("There was an error while executing the command.");
+            await this.handleCommandInvokeError(message);
         } else {
-            await message.channel.send("An unexpected error occurred. Please try again later.");
+            await this.handleUnexpectedError(message);
         }
+    }
+
+    private async handleCommandNotFoundError(message) {
+        await message.channel.send("Sorry, I didn't understand that command.");
+    }
+
+    private async handleMissingRequiredArgumentError(message) {
+        await message.channel.send("It looks like you're missing a required argument.");
+    }
+
+    private async handleBadArgumentError(message) {
+        await message.channel.send("There was an issue with one of the arguments you provided.");
+    }
+
+    private async handleCommandInvokeError(message) {
+        await message.channel.send("There was an error while executing the command.");
+    }
+
+    private async handleUnexpectedError(message) {
+        await message.channel.send("An unexpected error occurred. Please try again later.");
     }
 
     async onReady() {
