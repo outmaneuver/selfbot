@@ -110,27 +110,35 @@ class DatabaseManager {
     }
 
     async fetch_avatar_history(user_id: string): Promise<string[]> {
-        if (this.local_db_conn) {
-            return this.fetch_avatar_history_sqlite(user_id);
-        } else if (this.mongo_client) {
-            return this.fetch_avatar_history_mongodb(user_id);
-        } else if (this.mysql_conn) {
-            return this.fetch_avatar_history_mysql(user_id);
-        } else if (this.redis_client) {
-            return this.fetch_avatar_history_redis(user_id);
+        try {
+            if (this.local_db_conn) {
+                return this.fetch_avatar_history_sqlite(user_id);
+            } else if (this.mongo_client) {
+                return this.fetch_avatar_history_mongodb(user_id);
+            } else if (this.mysql_conn) {
+                return this.fetch_avatar_history_mysql(user_id);
+            } else if (this.redis_client) {
+                return this.fetch_avatar_history_redis(user_id);
+            }
+        } catch (e) {
+            console.error(`Error fetching avatar history: ${e}`);
         }
         return [];
     }
 
     async fetch_name_history(user_id: string): Promise<string[]> {
-        if (this.local_db_conn) {
-            return this.fetch_name_history_sqlite(user_id);
-        } else if (this.mongo_client) {
-            return this.fetch_name_history_mongodb(user_id);
-        } else if (this.mysql_conn) {
-            return this.fetch_name_history_mysql(user_id);
-        } else if (this.redis_client) {
-            return this.fetch_name_history_redis(user_id);
+        try {
+            if (this.local_db_conn) {
+                return this.fetch_name_history_sqlite(user_id);
+            } else if (this.mongo_client) {
+                return this.fetch_name_history_mongodb(user_id);
+            } else if (this.mysql_conn) {
+                return this.fetch_name_history_mysql(user_id);
+            } else if (this.redis_client) {
+                return this.fetch_name_history_redis(user_id);
+            }
+        } catch (e) {
+            console.error(`Error fetching name history: ${e}`);
         }
         return [];
     }

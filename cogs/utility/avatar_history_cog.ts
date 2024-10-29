@@ -28,17 +28,22 @@ class AvatarHistoryCog {
             user = message.author;
         }
 
-        if (action.toLowerCase() === 'history') {
-            const avatarHistory = await this.databaseManager.fetch_avatar_history(user.id);
-            if (avatarHistory.length > 0) {
-                await message.channel.send(`Here's the avatar history for ${user.username}: ${avatarHistory.join(', ')}`);
+        try {
+            if (action.toLowerCase() === 'history') {
+                const avatarHistory = await this.databaseManager.fetch_avatar_history(user.id);
+                if (avatarHistory.length > 0) {
+                    await message.channel.send(`Here's the avatar history for ${user.username}: ${avatarHistory.join(', ')}`);
+                } else {
+                    await message.channel.send(`Sorry, I couldn't find any avatar history for ${user.username}.`);
+                }
+            } else if (action.toLowerCase() === 'current') {
+                await message.channel.send(`Hey there! Here's the current avatar for ${user.username}: ${user.displayAvatarURL()}`);
             } else {
-                await message.channel.send(`Sorry, I couldn't find any avatar history for ${user.username}.`);
+                await message.channel.send("Invalid action. Please choose 'history' or 'current'.");
             }
-        } else if (action.toLowerCase() === 'current') {
-            await message.channel.send(`Hey there! Here's the current avatar for ${user.username}: ${user.displayAvatarURL()}`);
-        } else {
-            await message.channel.send("Invalid action. Please choose 'history' or 'current'.");
+        } catch (error) {
+            console.error(`Failed to fetch avatar history. Error: ${error.message}`);
+            await message.channel.send(`An error occurred while fetching avatar history for ${user.username}. Please try again later.`);
         }
     }
 }

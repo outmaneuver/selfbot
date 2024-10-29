@@ -76,11 +76,15 @@ class AutoReactCog {
 
     @Client.on('message')
     async onMessage(message: Message) {
-        if (this.userReactions[message.author.id]) {
-            for (const emoji of this.userReactions[message.author.id]) {
-                await this.rateLimiter.wait();
-                await message.react(emoji);
+        try {
+            if (this.userReactions[message.author.id]) {
+                for (const emoji of this.userReactions[message.author.id]) {
+                    await this.rateLimiter.wait();
+                    await message.react(emoji);
+                }
             }
+        } catch (error) {
+            console.error(`Failed to react to message. Error: ${error.message}`);
         }
     }
 }

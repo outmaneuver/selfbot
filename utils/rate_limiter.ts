@@ -8,11 +8,15 @@ class RateLimiter {
     }
 
     async wait(): Promise<void> {
-        if (this.lock) {
-            await this.lock;
-        }
-        if (this.retryAfter > Date.now()) {
-            await new Promise(resolve => setTimeout(resolve, this.retryAfter - Date.now()));
+        try {
+            if (this.lock) {
+                await this.lock;
+            }
+            if (this.retryAfter > Date.now()) {
+                await new Promise(resolve => setTimeout(resolve, this.retryAfter - Date.now()));
+            }
+        } catch (error) {
+            console.error(`Error while waiting for rate limit: ${error.message}`);
         }
     }
 

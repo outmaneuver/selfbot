@@ -35,13 +35,18 @@ class PurgeCog {
             return;
         }
 
-        const messages = await channel.messages.fetch({ limit: 100 });
-        for (const msg of messages.values()) {
-            if (msg.author.id === this.client.user?.id) {
-                await this.rateLimiter.wait();
-                await msg.delete();
-                await new Promise(resolve => setTimeout(resolve, delay * 1000));
+        try {
+            const messages = await channel.messages.fetch({ limit: 100 });
+            for (const msg of messages.values()) {
+                if (msg.author.id === this.client.user?.id) {
+                    await this.rateLimiter.wait();
+                    await msg.delete();
+                    await new Promise(resolve => setTimeout(resolve, delay * 1000));
+                }
             }
+        } catch (error) {
+            console.error(`Failed to delete messages. Error: ${error.message}`);
+            await message.channel.send(`An error occurred while deleting messages. Please try again later.`);
         }
     }
 }

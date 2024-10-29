@@ -25,11 +25,16 @@ class NameHistoryCog {
     async nameHistory(message: Message, { user }: { user: User | null }) {
         const targetUser = user || message.author;
 
-        const nameHistory = this.fetchNameHistory(targetUser.id);
-        if (nameHistory.length > 0) {
-            await message.channel.send(`Here's the name history for ${targetUser.username}: ${nameHistory.join(', ')}`);
-        } else {
-            await message.channel.send(`Sorry, I couldn't find any name history for ${targetUser.username}.`);
+        try {
+            const nameHistory = this.fetchNameHistory(targetUser.id);
+            if (nameHistory.length > 0) {
+                await message.channel.send(`Here's the name history for ${targetUser.username}: ${nameHistory.join(', ')}`);
+            } else {
+                await message.channel.send(`Sorry, I couldn't find any name history for ${targetUser.username}.`);
+            }
+        } catch (error) {
+            console.error(`Failed to fetch name history. Error: ${error.message}`);
+            await message.channel.send(`An error occurred while fetching name history for ${targetUser.username}. Please try again later.`);
         }
     }
 
