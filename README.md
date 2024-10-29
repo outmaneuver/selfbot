@@ -27,19 +27,19 @@ This selfbot utilizes a local database and has the option to utilize external da
 
 2. Install the required dependencies:
    ```
-   npm install
+   bun install
    ```
 
 3. Configure the selfbot by editing the `.env` file with your database connection details and other configurations.
 
 4. Build the TypeScript project:
    ```
-   npm run build
+   bun run build
    ```
 
 5. Run the selfbot:
    ```
-   npm start
+   bun run start
    ```
 
 ## Basic Usage
