@@ -1,0 +1,25 @@
+{
+  "name": "selfbot",
+  "version": "1.0.0",
+  "description": "A selfbot for Discord with various utility and moderation features.",
+  "main": "dist/selfbot.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/selfbot.js"
+  },
+  "dependencies": {
+    "discord.js-selfbot-v13": "^3.4.1",
+    "dotenv": "^10.0.0",
+    "sqlite3": "^5.0.2",
+    "pymongo": "^3.12.0",
+    "mysql": "^2.18.1",
+    "redis": "^3.1.2",
+    "cachetools": "^4.2.2"
+  },
+  "devDependencies": {
+    "typescript": "^4.4.3",
+    "ts-node": "^10.2.1"
+  },
+  "author": "outmaneuver",
+  "license": "MIT"
+}

@@ -33,4 +33,11 @@ If you encounter any bugs, issues, or errors while using selfbot, please report 
    - Expected behavior.
    - Any relevant screenshots or logs.
 
+## Testing and Linting
+
+To ensure the quality and consistency of the codebase, please follow these guidelines for testing and linting:
+
+1. **Testing**: Write tests for any new features or bug fixes. Use a testing framework like Jest or Mocha for your tests. Ensure that all tests pass before submitting your pull request.
+2. **Linting**: Use a linter like ESLint to check your code for style and formatting issues. Ensure that your code follows the project's coding standards and passes the linting checks.
+
 Thank you for your contributions and support!
