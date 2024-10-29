@@ -48,7 +48,7 @@ This selfbot utilizes a local database and has the option to utilize external da
 
 - `!namehistory [user]`: Request a user's name history. Defaults to the selfbot user if no user is mentioned.
 - `!avatar <action> [user]`: Request a user's avatar history or current avatar. Defaults to the selfbot user if no user is mentioned.
-- `!setactivity <activity_type> <activity_name>`: Set a custom activity status
+- `!setactivity <activity_type> <activity_name> <rich_presence_settings>`: Set a custom activity status, including rich presence settings.
 - `!clearactivity`: Clear the custom activity status
 - `!purge [channel_id] [delay]`: Purge a selfbot user's messages in a specified channel with an optional delay between deletions. If no channel ID is provided, it will purge messages in the current channel. The delay is in seconds and defaults to 1.0.
 - `!react <action> [user_ids] <emojis>`: Enable, disable, or list auto-react for specified users with given emojis.
@@ -66,3 +66,30 @@ This selfbot utilizes a local database and has the option to utilize external da
 - `!massban <user1> <user2> ... [reason]`: Ban multiple users from the server
 - `!kickrole <role> [reason]`: Kick all users with a specific role from the server
 - `!banrole <role> [reason]`: Ban all users with a specific role from the server
+
+### Example of Setting Rich Presence
+
+To set a rich presence using the `!setactivity` command, you can use the following example:
+
+```
+!setactivity richpresence null {
+  "applicationId": "367827983903490050",
+  "type": "PLAYING",
+  "url": "https://www.youtube.com/watch?v=5icFcPkVzMg",
+  "state": "Arcade Game",
+  "name": "osu!",
+  "details": "MariannE - Yooh",
+  "party": {
+    "max": 8,
+    "current": 1
+  },
+  "startTimestamp": 1633024800000,
+  "assetsLargeImage": "https://assets.ppy.sh/beatmaps/1550633/covers/list.jpg",
+  "assetsLargeText": "Idle",
+  "assetsSmallImage": "373370493127884800",
+  "assetsSmallText": "click the circles",
+  "platform": "desktop",
+  "buttonLabel": "Beatmap",
+  "buttonURL": "https://osu.ppy.sh/beatmapsets/1391659#osu/2873429"
+}
+```
