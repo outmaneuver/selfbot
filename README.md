@@ -27,14 +27,19 @@ This selfbot utilizes a local database and has the option to utilize external da
 
 2. Install the required dependencies:
    ```
-   pip install -r requirements.txt
+   npm install
    ```
 
 3. Configure the selfbot by editing the `.env` file with your database connection details and other configurations.
 
-4. Run the selfbot:
+4. Build the TypeScript project:
    ```
-   python selfbot.py
+   npm run build
+   ```
+
+5. Run the selfbot:
+   ```
+   npm start
    ```
 
 ## Basic Usage
