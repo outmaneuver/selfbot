@@ -40,4 +40,13 @@ To ensure the quality and consistency of the codebase, please follow these guide
 1. **Testing**: Write tests for any new features or bug fixes. Use a testing framework like Jest or Mocha for your tests. Ensure that all tests pass before submitting your pull request.
 2. **Linting**: Use a linter like ESLint to check your code for style and formatting issues. Ensure that your code follows the project's coding standards and passes the linting checks.
 
+## Using Bun
+
+To contribute to this project, you will need to use Bun instead of npm. Here are the steps to get started:
+
+1. Install Bun by following the instructions on the [Bun website](https://bun.sh/).
+2. Use `bun install` to install the required dependencies.
+3. Use `bun run build` to build the TypeScript project.
+4. Use `bun run start` to run the selfbot.
+
 Thank you for your contributions and support!

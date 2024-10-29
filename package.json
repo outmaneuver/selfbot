@@ -4,8 +4,8 @@
   "description": "A selfbot for Discord with various utility and moderation features.",
   "main": "dist/selfbot.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/selfbot.js"
+    "build": "bun run tsc",
+    "start": "bun run node dist/selfbot.js"
   },
   "dependencies": {
     "discord.js-selfbot-v13": "^3.4.1",
