@@ -13,8 +13,12 @@ class ModerationCog {
     private async _kickOrBan(message: Message, users: GuildMember[], action: 'kick' | 'ban', reason: string | null) {
         const affectedUsers: string[] = [];
         for (const user of users) {
-            await user[action](reason || undefined);
-            affectedUsers.push(user.user.username);
+            try {
+                await user[action](reason || undefined);
+                affectedUsers.push(user.user.username);
+            } catch (error) {
+                await message.channel.send(`Failed to ${action} ${user.user.username}. Error: ${error.message}`);
+            }
         }
         await message.channel.send(`${affectedUsers.length} users have been ${action}ed from the server. Reason: ${reason || 'No reason provided'}.`);
     }
@@ -33,6 +37,10 @@ class ModerationCog {
     async moderate(message: Message, { action, user, reason }: { action: string, user: GuildMember, reason: string | null }) {
         if (!['kick', 'ban'].includes(action.toLowerCase())) {
             await message.channel.send("Invalid action. Please choose 'kick' or 'ban'.");
+            return;
+        }
+        if (!user) {
+            await message.channel.send("Invalid user. Please mention a valid user.");
             return;
         }
         await this._kickOrBan(message, [user], action as 'kick' | 'ban', reason);

@@ -13,13 +13,18 @@ class ListCog {
         description: 'List users with auto-react enabled and their respective emojis.'
     })
     async listCommand(message: Message) {
-        const autoreactCog = this.client.cogs.get('AutoReactCog');
-        if (autoreactCog) {
-            const userReactions = autoreactCog.userReactions;
-            const response = this.generateResponseMessage(userReactions);
-            await message.channel.send(response);
-        } else {
-            await message.channel.send("AutoReactCog is not loaded.");
+        try {
+            const autoreactCog = this.client.cogs.get('AutoReactCog');
+            if (autoreactCog) {
+                const userReactions = autoreactCog.userReactions;
+                const response = this.generateResponseMessage(userReactions);
+                await message.channel.send(response);
+            } else {
+                await message.channel.send("AutoReactCog is not loaded.");
+            }
+        } catch (error) {
+            console.error(`Failed to list auto-react users. Error: ${error.message}`);
+            await message.channel.send(`An error occurred while listing auto-react users. Please try again later.`);
         }
     }
 

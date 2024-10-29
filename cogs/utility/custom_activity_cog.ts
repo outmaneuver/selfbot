@@ -45,8 +45,13 @@ class CustomActivityCog {
             return;
         }
 
-        await this.client.user.setActivity(activityName, { type: activity.type, url: activity.url });
-        await message.channel.send(`Activity set to ${activityType} ${activityName}`);
+        try {
+            await this.client.user.setActivity(activityName, { type: activity.type, url: activity.url });
+            await message.channel.send(`Activity set to ${activityType} ${activityName}`);
+        } catch (error) {
+            console.error(`Failed to set activity. Error: ${error.message}`);
+            await message.channel.send(`An error occurred while setting the activity. Please try again later.`);
+        }
     }
 
     @Command({
@@ -56,8 +61,13 @@ class CustomActivityCog {
     @errorHandler
     @hasPermissionsToSendMessages()
     async clearActivity(message: Message) {
-        await this.client.user.setActivity(null);
-        await message.channel.send("Activity cleared");
+        try {
+            await this.client.user.setActivity(null);
+            await message.channel.send("Activity cleared");
+        } catch (error) {
+            console.error(`Failed to clear activity. Error: ${error.message}`);
+            await message.channel.send(`An error occurred while clearing the activity. Please try again later.`);
+        }
     }
 }
 

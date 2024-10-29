@@ -27,10 +27,15 @@ class HelpCog {
             return;
         }
 
-        if (!input) {
-            await this.sendAllCategories(message, prefix);
-        } else {
-            await this.sendCategoryCommands(message, input, prefix);
+        try {
+            if (!input) {
+                await this.sendAllCategories(message, prefix);
+            } else {
+                await this.sendCategoryCommands(message, input, prefix);
+            }
+        } catch (error) {
+            console.error(`Failed to send help message. Error: ${error.message}`);
+            await message.channel.send(`An error occurred while sending the help message. Please try again later.`);
         }
     }
 
