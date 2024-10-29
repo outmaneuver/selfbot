@@ -1,4 +1,4 @@
-import { Client, Message } from 'discord.js-selfbot-v13';
+import { Client, Message, RichPresence, CustomStatus } from 'discord.js-selfbot-v13';
 import { Command } from 'discord-akairo';
 import { errorHandler } from '../../utils/error_handler';
 import { hasPermissionsToSendMessages } from '../../utils/permissions';
@@ -11,7 +11,26 @@ class CustomActivityCog {
         this.client = client;
     }
 
-    private createActivity(activityType: string, activityName: string | null) {
+    private createActivity(activityType: string, activityName: string | null, richPresenceSettings: any = null) {
+        if (activityType.toLowerCase() === 'richpresence' && richPresenceSettings) {
+            const status = new RichPresence(this.client)
+                .setApplicationId(richPresenceSettings.applicationId)
+                .setType(richPresenceSettings.type)
+                .setURL(richPresenceSettings.url)
+                .setState(richPresenceSettings.state)
+                .setName(richPresenceSettings.name)
+                .setDetails(richPresenceSettings.details)
+                .setParty(richPresenceSettings.party)
+                .setStartTimestamp(richPresenceSettings.startTimestamp)
+                .setAssetsLargeImage(richPresenceSettings.assetsLargeImage)
+                .setAssetsLargeText(richPresenceSettings.assetsLargeText)
+                .setAssetsSmallImage(richPresenceSettings.assetsSmallImage)
+                .setAssetsSmallText(richPresenceSettings.assetsSmallText)
+                .setPlatform(richPresenceSettings.platform)
+                .addButton(richPresenceSettings.buttonLabel, richPresenceSettings.buttonURL);
+            return status;
+        }
+
         switch (activityType.toLowerCase()) {
             case 'playing':
                 return { type: ActivityType.Playing, name: activityName };
@@ -33,21 +52,27 @@ class CustomActivityCog {
         description: 'Set a custom activity status.',
         args: [
             { id: 'activityType', type: 'string' },
-            { id: 'activityName', type: 'string', default: null }
+            { id: 'activityName', type: 'string', default: null },
+            { id: 'richPresenceSettings', type: 'json', default: null }
         ]
     })
     @errorHandler
     @hasPermissionsToSendMessages()
-    async setActivity(message: Message, { activityType, activityName }: { activityType: string, activityName: string | null }) {
-        const activity = this.createActivity(activityType, activityName);
+    async setActivity(message: Message, { activityType, activityName, richPresenceSettings }: { activityType: string, activityName: string | null, richPresenceSettings: any }) {
+        const activity = this.createActivity(activityType, activityName, richPresenceSettings);
         if (!activity) {
-            await message.channel.send("Invalid activity type. Please choose from playing, streaming, listening, watching, or custom.");
+            await message.channel.send("Invalid activity type. Please choose from playing, streaming, listening, watching, custom, or richpresence.");
             return;
         }
 
         try {
-            await this.client.user.setActivity(activityName, { type: activity.type, url: activity.url });
+            if (activityType.toLowerCase() === 'richpresence') {
+                await this.client.user.setPresence({ activities: [activity] });
+            } else {
+                await this.client.user.setActivity(activityName, { type: activity.type, url: activity.url });
+            }
             await message.channel.send(`Activity set to ${activityType} ${activityName}`);
+            await this.storeActivitySettings(activityType, activityName, richPresenceSettings);
         } catch (error) {
             console.error(`Failed to set activity. Error: ${error.message}`);
             await message.channel.send(`An error occurred while setting the activity. Please try again later.`);
@@ -67,6 +92,19 @@ class CustomActivityCog {
         } catch (error) {
             console.error(`Failed to clear activity. Error: ${error.message}`);
             await message.channel.send(`An error occurred while clearing the activity. Please try again later.`);
+        }
+    }
+
+    private async storeActivitySettings(activityType: string, activityName: string | null, richPresenceSettings: any) {
+        const settings = {
+            activityType,
+            activityName,
+            richPresenceSettings
+        };
+        try {
+            await this.client.databaseManager.store_custom_activity_settings(this.client.user.id, settings);
+        } catch (error) {
+            console.error(`Failed to store activity settings. Error: ${error.message}`);
         }
     }
 }
