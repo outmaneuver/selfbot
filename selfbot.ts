@@ -2,12 +2,16 @@ import { Client, Intents } from 'discord.js-selfbot-v13';
 import { config } from 'dotenv';
 import { CommandHandler } from './utils/command_handler';
 import { errorHandler } from './utils/error_handler';
+import DatabaseManager from './utils/database';
 
 config();
 
 class SelfBot extends CommandHandler {
+    private databaseManager: DatabaseManager;
+
     constructor() {
         super();
+        this.databaseManager = new DatabaseManager();
     }
 
     @errorHandler
@@ -17,13 +21,13 @@ class SelfBot extends CommandHandler {
 
     async onGuildJoin(guild) {
         for (const member of guild.members.cache.values()) {
-            this.databaseManager.storeUserInfo(member);
+            this.storeUserInfo(member);
         }
     }
 
     async onMemberUpdate(oldMember, newMember) {
         if (oldMember.user.username !== newMember.user.username || oldMember.user.avatar !== newMember.user.avatar || oldMember.displayName !== newMember.displayName) {
-            this.databaseManager.storeUserInfo(newMember);
+            this.storeUserInfo(newMember);
         }
     }
 
@@ -32,9 +36,13 @@ class SelfBot extends CommandHandler {
         await this.loadCustomActivitySettings();
         for (const guild of this.guilds.cache.values()) {
             for (const member of guild.members.cache.values()) {
-                this.databaseManager.storeUserInfo(member);
+                this.storeUserInfo(member);
             }
         }
+    }
+
+    private async storeUserInfo(member) {
+        await this.databaseManager.storeUserInfo(member);
     }
 }
 
