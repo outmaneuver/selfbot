@@ -3,6 +3,7 @@ import { config } from 'dotenv';
 import { CommandHandler } from './utils/command_handler';
 import { errorHandler } from './utils/error_handler';
 import DatabaseManager from './utils/database';
+import { checkForUpdates } from './utils/auto_updater';
 
 config();
 
@@ -34,6 +35,7 @@ class SelfBot extends CommandHandler {
     async onReady() {
         console.log(`Logged in as ${this.user.tag}`);
         await this.loadCustomActivitySettings();
+        await checkForUpdates();
     }
 
     private async storeUserInfo(member) {

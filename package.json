@@ -5,7 +5,8 @@
   "main": "dist/selfbot.js",
   "scripts": {
     "build": "bun run tsc",
-    "start": "bun run node dist/selfbot.js"
+    "start": "bun run node dist/selfbot.js",
+    "update": "bun run node dist/utils/auto_updater.js"
   },
   "dependencies": {
     "discord.js-selfbot-v13": "^3.4.1",

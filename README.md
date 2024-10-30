@@ -16,6 +16,7 @@ This selfbot utilizes a local database and has the option to utilize external da
 - Determines which database to use if other databases aren't configured
 - Warns the user if other databases aren't set up and uses a local database
 - Caching for other functionalities even if no external database is set up
+- Auto-updater functionality to keep the selfbot up-to-date with the repository
 
 ## Setup and Running
 
@@ -41,6 +42,19 @@ This selfbot utilizes a local database and has the option to utilize external da
    ```
    bun run start
    ```
+
+## Configuring the Auto-Updater
+
+To configure the auto-updater, add the following environment variables to your `.env` file:
+
+```
+# Auto-updater configuration
+AUTO_UPDATE=true
+UPDATE_INTERVAL=3600
+```
+
+- `AUTO_UPDATE`: Set to `true` to enable the auto-updater, or `false` to disable it.
+- `UPDATE_INTERVAL`: The interval (in seconds) at which the auto-updater checks for updates. Default is `3600` seconds (1 hour).
 
 ## Basic Usage
 
