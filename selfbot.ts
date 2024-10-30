@@ -34,15 +34,10 @@ class SelfBot extends CommandHandler {
     async onReady() {
         console.log(`Logged in as ${this.user.tag}`);
         await this.loadCustomActivitySettings();
-        for (const guild of this.guilds.cache.values()) {
-            for (const member of guild.members.cache.values()) {
-                this.storeUserInfo(member);
-            }
-        }
     }
 
     private async storeUserInfo(member) {
-        await this.databaseManager.storeUserInfo(member);
+        await this.databaseManager.store_user_info(member);
     }
 }
 

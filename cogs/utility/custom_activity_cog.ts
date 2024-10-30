@@ -11,37 +11,61 @@ class CustomActivityCog {
         this.client = client;
     }
 
+    private createRichPresence(richPresenceSettings: any) {
+        const status = new RichPresence(this.client)
+            .setApplicationId(richPresenceSettings.applicationId)
+            .setType(richPresenceSettings.type)
+            .setURL(richPresenceSettings.url)
+            .setState(richPresenceSettings.state)
+            .setName(richPresenceSettings.name)
+            .setDetails(richPresenceSettings.details)
+            .setParty(richPresenceSettings.party)
+            .setStartTimestamp(richPresenceSettings.startTimestamp)
+            .setAssetsLargeImage(richPresenceSettings.assetsLargeImage)
+            .setAssetsLargeText(richPresenceSettings.assetsLargeText)
+            .setAssetsSmallImage(richPresenceSettings.assetsSmallImage)
+            .setAssetsSmallText(richPresenceSettings.assetsSmallText)
+            .setPlatform(richPresenceSettings.platform)
+            .addButton(richPresenceSettings.buttonLabel, richPresenceSettings.buttonURL);
+        return status;
+    }
+
+    private createPlayingActivity(activityName: string) {
+        return { type: ActivityType.Playing, name: activityName };
+    }
+
+    private createStreamingActivity(activityName: string) {
+        return { type: ActivityType.Streaming, name: activityName, url: 'https://twitch.tv/streamer' };
+    }
+
+    private createListeningActivity(activityName: string) {
+        return { type: ActivityType.Listening, name: activityName };
+    }
+
+    private createWatchingActivity(activityName: string) {
+        return { type: ActivityType.Watching, name: activityName };
+    }
+
+    private createCustomActivity(activityName: string) {
+        return { type: ActivityType.Custom, name: activityName };
+    }
+
     private createActivity(activityType: string, activityName: string | null, richPresenceSettings: any = null) {
         if (activityType.toLowerCase() === 'richpresence' && richPresenceSettings) {
-            const status = new RichPresence(this.client)
-                .setApplicationId(richPresenceSettings.applicationId)
-                .setType(richPresenceSettings.type)
-                .setURL(richPresenceSettings.url)
-                .setState(richPresenceSettings.state)
-                .setName(richPresenceSettings.name)
-                .setDetails(richPresenceSettings.details)
-                .setParty(richPresenceSettings.party)
-                .setStartTimestamp(richPresenceSettings.startTimestamp)
-                .setAssetsLargeImage(richPresenceSettings.assetsLargeImage)
-                .setAssetsLargeText(richPresenceSettings.assetsLargeText)
-                .setAssetsSmallImage(richPresenceSettings.assetsSmallImage)
-                .setAssetsSmallText(richPresenceSettings.assetsSmallText)
-                .setPlatform(richPresenceSettings.platform)
-                .addButton(richPresenceSettings.buttonLabel, richPresenceSettings.buttonURL);
-            return status;
+            return this.createRichPresence(richPresenceSettings);
         }
 
         switch (activityType.toLowerCase()) {
             case 'playing':
-                return { type: ActivityType.Playing, name: activityName };
+                return this.createPlayingActivity(activityName);
             case 'streaming':
-                return { type: ActivityType.Streaming, name: activityName, url: 'https://twitch.tv/streamer' };
+                return this.createStreamingActivity(activityName);
             case 'listening':
-                return { type: ActivityType.Listening, name: activityName };
+                return this.createListeningActivity(activityName);
             case 'watching':
-                return { type: ActivityType.Watching, name: activityName };
+                return this.createWatchingActivity(activityName);
             case 'custom':
-                return { type: ActivityType.Custom, name: activityName };
+                return this.createCustomActivity(activityName);
             default:
                 return null;
         }

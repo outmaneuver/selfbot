@@ -2,25 +2,13 @@ import { Client, Message, GuildMember, Role } from 'discord.js-selfbot-v13';
 import { Command } from 'discord-akairo';
 import { errorHandler } from '../../utils/error_handler';
 import { hasPermissionsToSendMessages } from '../../utils/permissions';
+import { kickOrBan } from '../../utils/moderation_utils';
 
 class ModerationCog {
     private client: Client;
 
     constructor(client: Client) {
         this.client = client;
-    }
-
-    private async _kickOrBan(message: Message, users: GuildMember[], action: 'kick' | 'ban', reason: string | null) {
-        const affectedUsers: string[] = [];
-        for (const user of users) {
-            try {
-                await user[action](reason || undefined);
-                affectedUsers.push(user.user.username);
-            } catch (error) {
-                await message.channel.send(`Failed to ${action} ${user.user.username}. Error: ${error.message}`);
-            }
-        }
-        await message.channel.send(`${affectedUsers.length} users have been ${action}ed from the server. Reason: ${reason || 'No reason provided'}.`);
     }
 
     @Command({
@@ -43,7 +31,7 @@ class ModerationCog {
             await message.channel.send("Invalid user. Please mention a valid user.");
             return;
         }
-        await this._kickOrBan(message, [user], action as 'kick' | 'ban', reason);
+        await kickOrBan(message, [user], action as 'kick' | 'ban', reason);
     }
 
     @Command({
@@ -62,7 +50,7 @@ class ModerationCog {
             await message.channel.send("Invalid action. Please choose 'kick' or 'ban'.");
             return;
         }
-        await this._kickOrBan(message, users, action as 'kick' | 'ban', reason);
+        await kickOrBan(message, users, action as 'kick' | 'ban', reason);
     }
 
     @Command({
@@ -82,7 +70,7 @@ class ModerationCog {
             return;
         }
         const members = role.members.array();
-        await this._kickOrBan(message, members, action as 'kick' | 'ban', reason);
+        await kickOrBan(message, members, action as 'kick' | 'ban', reason);
     }
 }
 
