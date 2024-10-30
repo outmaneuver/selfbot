@@ -109,96 +109,53 @@ class DatabaseManager {
         }
     }
 
-    async fetch_avatar_history(user_id: string): Promise<string[]> {
+    async fetch_history(user_id: string, type: 'avatar' | 'name'): Promise<string[]> {
         try {
             if (this.local_db_conn) {
-                return this.fetch_avatar_history_sqlite(user_id);
+                return this.fetch_history_sqlite(user_id, type);
             } else if (this.mongo_client) {
-                return this.fetch_avatar_history_mongodb(user_id);
+                return this.fetch_history_mongodb(user_id, type);
             } else if (this.mysql_conn) {
-                return this.fetch_avatar_history_mysql(user_id);
+                return this.fetch_history_mysql(user_id, type);
             } else if (this.redis_client) {
-                return this.fetch_avatar_history_redis(user_id);
+                return this.fetch_history_redis(user_id, type);
             }
         } catch (e) {
-            console.error(`Error fetching avatar history: ${e}`);
+            console.error(`Error fetching ${type} history: ${e}`);
         }
         return [];
     }
 
-    async fetch_name_history(user_id: string): Promise<string[]> {
-        try {
-            if (this.local_db_conn) {
-                return this.fetch_name_history_sqlite(user_id);
-            } else if (this.mongo_client) {
-                return this.fetch_name_history_mongodb(user_id);
-            } else if (this.mysql_conn) {
-                return this.fetch_name_history_mysql(user_id);
-            } else if (this.redis_client) {
-                return this.fetch_name_history_redis(user_id);
-            }
-        } catch (e) {
-            console.error(`Error fetching name history: ${e}`);
-        }
-        return [];
-    }
-
-    async fetch_avatar_history_sqlite(user_id: string): Promise<string[]> {
+    async fetch_history_sqlite(user_id: string, type: 'avatar' | 'name'): Promise<string[]> {
+        const table = type === 'avatar' ? 'avatar_history' : 'name_history';
         return new Promise((resolve, reject) => {
-            this.local_db_conn!.all("SELECT avatar FROM avatar_history WHERE user_id = ?", [user_id], (err, rows) => {
+            this.local_db_conn!.all(`SELECT ${type} FROM ${table} WHERE user_id = ?`, [user_id], (err, rows) => {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(rows.map(row => row.avatar));
+                    resolve(rows.map(row => row[type]));
                 }
             });
         });
     }
 
-    async fetch_avatar_history_mongodb(user_id: string): Promise<string[]> {
+    async fetch_history_mongodb(user_id: string, type: 'avatar' | 'name'): Promise<string[]> {
         const db = this.mongo_client!.db(process.env.MONGODB_DATABASE);
-        const collection = db.collection("avatar_history");
+        const collection = db.collection(`${type}_history`);
         const docs = await collection.find({ user_id }).toArray();
-        return docs.map(doc => doc.avatar);
+        return docs.map(doc => doc[type]);
     }
 
-    async fetch_avatar_history_mysql(user_id: string): Promise<string[]> {
-        const [rows] = await this.mysql_conn!.execute("SELECT avatar FROM avatar_history WHERE user_id = ?", [user_id]);
-        return (rows as any[]).map(row => row.avatar);
+    async fetch_history_mysql(user_id: string, type: 'avatar' | 'name'): Promise<string[]> {
+        const table = type === 'avatar' ? 'avatar_history' : 'name_history';
+        const [rows] = await this.mysql_conn!.execute(`SELECT ${type} FROM ${table} WHERE user_id = ?`, [user_id]);
+        return (rows as any[]).map(row => row[type]);
     }
 
-    async fetch_avatar_history_redis(user_id: string): Promise<string[]> {
-        const avatars = await this.redis_client!.lRange(`avatar_history:${user_id}`, 0, -1);
-        return avatars;
-    }
-
-    async fetch_name_history_sqlite(user_id: string): Promise<string[]> {
-        return new Promise((resolve, reject) => {
-            this.local_db_conn!.all("SELECT name FROM name_history WHERE user_id = ?", [user_id], (err, rows) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(rows.map(row => row.name));
-                }
-            });
-        });
-    }
-
-    async fetch_name_history_mongodb(user_id: string): Promise<string[]> {
-        const db = this.mongo_client!.db(process.env.MONGODB_DATABASE);
-        const collection = db.collection("name_history");
-        const docs = await collection.find({ user_id }).toArray();
-        return docs.map(doc => doc.name);
-    }
-
-    async fetch_name_history_mysql(user_id: string): Promise<string[]> {
-        const [rows] = await this.mysql_conn!.execute("SELECT name FROM name_history WHERE user_id = ?", [user_id]);
-        return (rows as any[]).map(row => row.name);
-    }
-
-    async fetch_name_history_redis(user_id: string): Promise<string[]> {
-        const names = await this.redis_client!.lRange(`name_history:${user_id}`, 0, -1);
-        return names;
+    async fetch_history_redis(user_id: string, type: 'avatar' | 'name'): Promise<string[]> {
+        const key = `${type}_history:${user_id}`;
+        const history = await this.redis_client!.lRange(key, 0, -1);
+        return history;
     }
 
     async store_user_info(user: any): Promise<void> {

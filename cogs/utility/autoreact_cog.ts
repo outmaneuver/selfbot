@@ -2,6 +2,7 @@ import { Client, Message, GuildMember } from 'discord.js-selfbot-v13';
 import { Command } from 'discord-akairo';
 import { RateLimiter } from '../../utils/rate_limiter';
 import { hasPermissionsToUseExternalEmojis } from '../../utils/permissions';
+import { enableReactions, disableReactions, listReactions } from '../../utils/autoreact_utils';
 
 class AutoReactCog {
     private client: Client;
@@ -31,7 +32,7 @@ class AutoReactCog {
         }
 
         if (action.toLowerCase() === 'list') {
-            await this.listReactions(message);
+            await listReactions(message, this.userReactions);
             return;
         }
 
@@ -40,37 +41,10 @@ class AutoReactCog {
 
         for (const userId of userIdArray) {
             if (action.toLowerCase() === 'enable') {
-                await this.enableReactions(message, userId, emojiArray);
+                await enableReactions(message, userId, emojiArray, this.userReactions);
             } else if (action.toLowerCase() === 'disable') {
-                await this.disableReactions(message, userId);
+                await disableReactions(message, userId, this.userReactions);
             }
-        }
-    }
-
-    async listReactions(message: Message) {
-        if (Object.keys(this.userReactions).length > 0) {
-            let response = "Auto-react enabled for the following users:\n";
-            for (const [userId, emojis] of Object.entries(this.userReactions)) {
-                response += `User ID: ${userId}, Emojis: ${Array.from(emojis).join(', ')}\n`;
-            }
-            await message.channel.send(`\`\`\`${response}\`\`\``);
-        } else {
-            await message.channel.send("No users have auto-react enabled.");
-        }
-    }
-
-    async enableReactions(message: Message, userId: string, emojis: string[]) {
-        if (!this.userReactions[userId]) {
-            this.userReactions[userId] = new Set();
-        }
-        emojis.forEach(emoji => this.userReactions[userId].add(emoji));
-        await message.channel.send(`Auto-react enabled for user: ${userId} with emojis: ${emojis.join(', ')}`);
-    }
-
-    async disableReactions(message: Message, userId: string) {
-        if (this.userReactions[userId]) {
-            delete this.userReactions[userId];
-            await message.channel.send(`Auto-react disabled for user: ${userId}`);
         }
     }
 
